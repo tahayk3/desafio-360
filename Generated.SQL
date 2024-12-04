@@ -287,5 +287,72 @@ ALTER TABLE [Orden] ADD CONSTRAINT [Relationship18] FOREIGN KEY ([id_usuario]) R
 go
 
 
+---------------------PROCEDIMIENTOS ALMACENADOS PARA ESTADOS-------------------
+--Insertar
+CREATE PROCEDURE InsertarEstado
+    @nombre Varchar(45)
+AS
+BEGIN
+    INSERT INTO Estados (nombre)
+    VALUES(@nombre);
+
+    --Regresar id de, registro insertado
+    SELECT SCOPE_IDENTITY() AS id_estado;
+END;
+GO
+
+--Actualizar
+CREATE PROCEDURE ActualizarEstado
+    @id_estado Int,
+    @nombre Varchar(45)
+AS
+BEGIN 
+    UPDATE Estados
+    SET nombre = @nombre
+    WHERE id_estado = @id_estado;
+    --Verifica si se actualizo algun registro 
+    IF @@ROWCOUNT = 0
+        RAISERROR('No se encontro el estado con el ID  proporcionado', 16,1);
+END;
+GO
+
+--Eliminar producto
+CREATE PROCEDURE EliminarEstado
+    @id_estado Int
+AS
+BEGIN
+    DELETE FROM Estados
+    WHERE id_estado = @id_estado;
+
+    --Verifica si se elimino algun registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el estado con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Consultar por id
+CREATE PROCEDURE ConsultarEstadoPorID
+    @id_estado Int
+AS
+BEGIN
+    SELECT id_estado, nombre
+    FROM Estados
+    WHERE id_estado = @id_estado;
+
+    --Manejo de error si no se encuentra
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el estado con el ID proporcionado', 16, 1);
+END;
+GO
+
+--LISTAR TODOS LOS DATOS DE LA TABLA 
+CREATE PROCEDURE ListarEstados
+AS
+BEGIN
+    SELECT id_estado, nombre
+    FROM Estados;
+END;
+GO
+
 
 
