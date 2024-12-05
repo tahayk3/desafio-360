@@ -355,4 +355,107 @@ END;
 GO
 
 
+---------------------PROCEDIMIENTOS ALMACENADOS PARA ESTADOS-------------------
+--Insertar
+CREATE PROCEDURE InsertarProducto
+    @nombre Varchar(45),
+    @marca Varchar(45) = NULL,
+    @codigo Varchar(45),
+    @stock Float = NULL,
+    @precio Float,
+    @fecha_creacion Datetime,
+    @foto Varbinary(max) = NULL,
+    @id_categoria_producto Int = NULL,
+    @id_estado Int = NULL
+AS
+BEGIN
+    INSERT INTO Productos (
+        nombre, marca, codigo, stock, precio, fecha_creacion, foto, id_categoria_producto, id_estado
+    )
+    VALUES (
+        @nombre, @marca, @codigo, @stock, @precio, @fecha_creacion, @foto, @id_categoria_producto, @id_estado
+    );
+
+    --Devolver el ID del producto insertado
+    SELECT SCOPE_IDENTITY() AS id_producto;
+END;
+GO
+
+--Actualizar
+CREATE PROCEDURE ActualizarProducto
+    @id_producto Int,
+    @nombre Varchar(45),
+    @marca Varchar(45) = NULL,
+    @codigo Varchar(45),
+    @stock Float = NULL,
+    @precio Float,
+    @fecha_creacion Datetime,
+    @foto Varbinary(max) = NULL,
+    @id_categoria_producto Int = NULL,
+    @id_estado Int = NULL
+AS
+BEGIN
+    UPDATE Productos
+    SET 
+        nombre = @nombre,
+        marca = @marca,
+        codigo = @codigo,
+        stock = @stock,
+        precio = @precio,
+        fecha_creacion = @fecha_creacion,
+        foto = @foto,
+        id_categoria_producto = @id_categoria_producto,
+        id_estado = @id_estado
+    WHERE id_producto = @id_producto;
+
+    -- Verifica si se actualizó algún registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el producto con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Eliminar producto
+CREATE PROCEDURE EliminarProducto
+    @id_producto Int
+AS
+BEGIN
+    DELETE FROM Productos
+    WHERE id_producto = @id_producto;
+
+    -- Verifica si se eliminó algún registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el producto con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Consultar por id
+CREATE PROCEDURE ConsultarProductoPorID
+    @id_producto Int
+AS
+BEGIN
+    SELECT 
+        id_producto, nombre, marca, codigo, stock, precio, fecha_creacion, foto, id_categoria_producto, id_estado
+    FROM 
+        Productos
+    WHERE 
+        id_producto = @id_producto;
+
+    -- Opcional: Manejo de error si no se encuentra
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el producto con el ID proporcionado', 16, 1);
+END;
+GO
+
+--LISTAR TODOS LOS DATOS DE LA TABLA 
+CREATE PROCEDURE ListarProductos
+AS
+BEGIN
+    SELECT 
+        id_producto, nombre, marca, codigo, stock, precio, fecha_creacion, foto, id_categoria_producto, id_estado
+    FROM 
+        Productos;
+END;
+GO
+
+
 
