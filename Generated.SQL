@@ -793,6 +793,66 @@ GO
 
 ---------------------PROCEDIMIENTOS ALMACENADOS PARA ROL-------------------
 --Insertar
+CREATE PROCEDURE InsertarRol
+    @nombre Int
+AS
+BEGIN
+    INSERT INTO Rol(nombre)
+    VALUES(@nombre);
+
+    --Duvuelve el ID del ultimo registro insertado
+    SELECT SCOPE_IDENTITY() AS id_rol;
+END;
+GO
+
+--Actualizar
+CREATE PROCEDURE ActualizarRol
+    @id_rol Int,
+    @nombre Varchar(45)
+AS
+BEGIN
+    UPDATE Rol
+    SET nombre = @nombre
+    WHERE id_rol = @id_rol;
+END;
+GO
+
+--Eliminar producto
+CREATE PROCEDURE EliminarRol
+    @id_rol Int
+AS
+BEGIN
+    DELETE FROM Rol
+    WHERE id_rol = @id_rol;
+END;
+GO
+
+--Consultar por id
+CREATE PROCEDURE ListarRoles
+AS
+BEGIN
+    SELECT id_rol, nombre
+    FROM Rol
+    ORDER BY nombre ASC;
+END;
+GO
+
+--Listar todos los datos de la tabla 
+CREATE PROCEDURE BuscarRolPorId
+    @id_rol Int
+AS
+BEGIN
+    SELECT id_rol, nombre
+    FROM Rol
+    WHERE id_rol = @id_rol;
+END;
+GO
+
+
+
+
+---------------------PROCEDIMIENTOS ALMACENADOS PARA CLIENTES-------------------
+--Insertar
 
 
 --Actualizar
