@@ -345,7 +345,7 @@ BEGIN
 END;
 GO
 
---LISTAR TODOS LOS DATOS DE LA TABLA 
+--Listar todos los datos de la tabla
 CREATE PROCEDURE ListarEstados
 AS
 BEGIN
@@ -446,7 +446,7 @@ BEGIN
 END;
 GO
 
---LISTAR TODOS LOS DATOS DE LA TABLA 
+--Listar todos los datos de la tabla
 CREATE PROCEDURE ListarProductos
 AS
 BEGIN
@@ -551,7 +551,7 @@ BEGIN
 END;
 GO
 
---LISTAR TODOS LOS DATOS DE LA TABLA 
+--Listar todos los datos de la tabla
 CREATE PROCEDURE ListarUsuarios
 AS
 BEGIN
@@ -649,7 +649,7 @@ BEGIN
 END;
 GO
 
---LISTAR TODOS LOS DATOS DE LA TABLA 
+--Listar todos los datos de la tabla
 CREATE PROCEDURE ListarDetallesDeOrden
     @id_orden Int
 AS
@@ -668,6 +668,142 @@ GO
 
 
 
+---------------------PROCEDIMIENTOS ALMACENADOS PARA ORDEN-------------------
+--Insertar
+CREATE PROCEDURE InsertarOrden
+    @fecha_creacion Datetime,
+    @nombre_completo Varchar(60),
+    @direccion Char(70),
+    @telefono Tinyint,
+    @correo Varbinary(50),
+    @fecha_entrega Date,
+    @total_orden Float,
+    @id_estado Int,
+    @id_usuario Int
+AS
+BEGIN
+    INSERT INTO Orden (
+        fecha_creacion, nombre_completo, direccion, telefono, correo, 
+        fecha_entrega, total_orden, id_estado, id_usuario
+    )
+    VALUES (
+        @fecha_creacion, @nombre_completo, @direccion, @telefono, @correo, 
+        @fecha_entrega, @total_orden, @id_estado, @id_usuario
+    );
 
+    -- Devuelve el ID de la orden recién creada
+    SELECT SCOPE_IDENTITY() AS id_orden;
+END;
+GO
+
+--Actualizar
+CREATE PROCEDURE ActualizarOrden
+    @id_orden Int,
+    @fecha_creacion Datetime,
+    @nombre_completo Varchar(60),
+    @direccion Char(70),
+    @telefono Tinyint,
+    @correo Varbinary(50),
+    @fecha_entrega Date,
+    @total_orden Float,
+    @id_estado Int,
+    @id_usuario Int
+AS
+BEGIN
+    UPDATE Orden
+    SET 
+        fecha_creacion = @fecha_creacion,
+        nombre_completo = @nombre_completo,
+        direccion = @direccion,
+        telefono = @telefono,
+        correo = @correo,
+        fecha_entrega = @fecha_entrega,
+        total_orden = @total_orden,
+        id_estado = @id_estado,
+        id_usuario = @id_usuario
+    WHERE id_orden = @id_orden;
+
+    -- Verifica si se actualizó algún registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró la orden con el ID proporcionado', 16, 1);
+END;
+GO  
+
+--Eliminar producto
+CREATE PROCEDURE EliminarOrden
+    @id_orden Int
+AS
+BEGIN
+    DELETE FROM Orden
+    WHERE id_orden = @id_orden;
+
+    -- Verifica si se eliminó algún registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró la orden con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Consultar por id
+CREATE PROCEDURE ConsultarOrdenPorID
+    @id_orden Int
+AS
+BEGIN
+    SELECT 
+        o.id_orden, o.fecha_creacion, o.nombre_completo, o.direccion, 
+        o.telefono, o.correo, o.fecha_entrega, o.total_orden,
+        o.id_estado, e.nombre AS estado_nombre,
+        o.id_usuario, u.nombre_completo AS usuario_nombre
+    FROM 
+        Orden o
+    LEFT JOIN 
+        Estados e ON o.id_estado = e.id_estado
+    LEFT JOIN 
+        Usuarios u ON o.id_usuario = u.id_usuario
+    WHERE 
+        o.id_orden = @id_orden;
+
+    --Manejo de error si no se encuentra
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró la orden con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Listar todos los datos de la tabla
+CREATE PROCEDURE ListarOrdenes
+AS
+BEGIN
+    SELECT 
+        o.id_orden, o.fecha_creacion, o.nombre_completo, o.direccion, 
+        o.telefono, o.correo, o.fecha_entrega, o.total_orden,
+        o.id_estado, e.nombre AS estado_nombre,
+        o.id_usuario, u.nombre_completo AS usuario_nombre
+    FROM 
+        Orden o
+    LEFT JOIN 
+        Estados e ON o.id_estado = e.id_estado
+    LEFT JOIN 
+        Usuarios u ON o.id_usuario = u.id_usuario
+    ORDER BY o.fecha_creacion DESC;
+END;
+GO
+
+
+
+
+
+---------------------PROCEDIMIENTOS ALMACENADOS PARA ROL-------------------
+--Insertar
+
+
+--Actualizar
+
+
+--Eliminar producto
+
+
+--Consultar por id
+
+
+--Listar todos los datos de la tabla 
 
 
