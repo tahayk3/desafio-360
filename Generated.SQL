@@ -355,7 +355,7 @@ END;
 GO
 
 
----------------------PROCEDIMIENTOS ALMACENADOS PARA ESTADOS-------------------
+---------------------PROCEDIMIENTOS ALMACENADOS PARA PRODUCTOS-------------------
 --Insertar
 CREATE PROCEDURE InsertarProducto
     @nombre Varchar(45),
@@ -456,6 +456,9 @@ BEGIN
         Productos;
 END;
 GO
+
+
+
 
 
 
