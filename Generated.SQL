@@ -458,6 +458,215 @@ END;
 GO
 
 
+---------------------PROCEDIMIENTOS ALMACENADOS PARA USUARIOS-------------------
+--Insertar
+CREATE PROCEDURE InsertarUsuario
+    @correo Varchar(55),
+    @nombre_completo Varchar(70),
+    @password Varchar(35),
+    @telefono Varchar(45) = NULL,
+    @fecha_nacimiento Date = NULL,
+    @fecha_creacion Datetime = NULL,
+    @id_rol Int = NULL,
+    @id_cliente Int = NULL,
+    @id_estado Int = NULL
+AS
+BEGIN
+    -- Si no se proporciona una fecha de creación, se sa la actual
+    IF @fecha_creacion IS NULL
+        SET @fecha_creacion = GETDATE();
+
+    INSERT INTO Usuarios (
+        correo, nombre_completo, password, telefono, fecha_nacimiento, fecha_creacion, id_rol, id_cliente, id_estado
+    )
+    VALUES (
+        @correo, @nombre_completo, @password, @telefono, @fecha_nacimiento, @fecha_creacion, @id_rol, @id_cliente, @id_estado
+    );
+
+    --Devolver el ID del usuario recién insertado
+    SELECT SCOPE_IDENTITY() AS id_usuario;
+END;
+GO
+
+--Actualizar
+CREATE PROCEDURE ActualizarUsuario
+    @id_usuario Int,
+    @correo Varchar(55),
+    @nombre_completo Varchar(70),
+    @password Varchar(35),
+    @telefono Varchar(45) = NULL,
+    @fecha_nacimiento Date = NULL,
+    @id_rol Int = NULL,
+    @id_cliente Int = NULL,
+    @id_estado Int = NULL
+AS
+BEGIN
+    UPDATE Usuarios
+    SET 
+        correo = @correo,
+        nombre_completo = @nombre_completo,
+        password = @password,
+        telefono = @telefono,
+        fecha_nacimiento = @fecha_nacimiento,
+        id_rol = @id_rol,
+        id_cliente = @id_cliente,
+        id_estado = @id_estado
+    WHERE id_usuario = @id_usuario;
+
+    -- Verifica si se actualizó algún registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el usuario con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Eliminar producto
+CREATE PROCEDURE EliminarUsuario
+    @id_usuario Int
+AS
+BEGIN
+    DELETE FROM Usuarios
+    WHERE id_usuario = @id_usuario;
+
+    -- Verifica si se eliminó algún registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el usuario con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Consultar por id
+CREATE PROCEDURE ConsultarUsuarioPorID
+    @id_usuario Int
+AS
+BEGIN
+    SELECT 
+        id_usuario, correo, nombre_completo, telefono, fecha_nacimiento, fecha_creacion, id_rol, id_cliente, id_estado
+    FROM 
+        Usuarios
+    WHERE 
+        id_usuario = @id_usuario;
+
+    -- Opcional: Manejo de error si no se encuentra
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el usuario con el ID proporcionado', 16, 1);
+END;
+GO
+
+--LISTAR TODOS LOS DATOS DE LA TABLA 
+CREATE PROCEDURE ListarUsuarios
+AS
+BEGIN
+    SELECT 
+        id_usuario, correo, nombre_completo, telefono, fecha_nacimiento, fecha_creacion, id_rol, id_cliente, id_estado
+    FROM 
+        Usuarios;
+END;
+GO
+
+
+---------------------PROCEDIMIENTOS ALMACENADOS PARA ORDEN DETALLE -------------------
+--Insertar
+CREATE PROCEDURE InsertarOrdenDetalle
+    @cantidad Int,
+    @precio Float,
+    @id_orden Int,
+    @id_producto Int
+AS
+BEGIN
+    DECLARE @sub_total Float;
+
+    -- Calcula el subtotal automáticamente
+    SET @sub_total = @cantidad * @precio;
+
+    INSERT INTO OrdenDetalles (
+        cantidad, precio, sub_total, id_orden, id_producto
+    )
+    VALUES (
+        @cantidad, @precio, @sub_total, @id_orden, @id_producto
+    );
+
+    --Devolver el ID del detalle de la orden insertada
+    SELECT SCOPE_IDENTITY() AS id_orden_detalle;
+END;
+GO
+--Actualizar
+CREATE PROCEDURE ActualizarOrdenDetalle
+    @id_orden_detalle Int,
+    @cantidad Int,
+    @precio Float,
+    @id_orden Int,
+    @id_producto Int
+AS
+BEGIN
+    DECLARE @sub_total Float;
+
+    -- Recalcula el subtotal automáticamente
+    SET @sub_total = @cantidad * @precio;
+
+    UPDATE OrdenDetalles
+    SET 
+        cantidad = @cantidad,
+        precio = @precio,
+        sub_total = @sub_total,
+        id_orden = @id_orden,
+        id_producto = @id_producto
+    WHERE id_orden_detalle = @id_orden_detalle;
+
+    -- Verifica si se actualizó algún registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el detalle de la orden con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Eliminar producto
+CREATE PROCEDURE EliminarOrdenDetalle
+    @id_orden_detalle Int
+AS
+BEGIN
+    DELETE FROM OrdenDetalles
+    WHERE id_orden_detalle = @id_orden_detalle;
+
+    --Verifica si se eliminó algún registro
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el detalle de la orden con el ID proporcionado', 16, 1);
+END;
+GO
+
+--Consultar por id
+CREATE PROCEDURE ConsultarOrdenDetallePorID
+    @id_orden_detalle Int
+AS
+BEGIN
+    SELECT 
+        id_orden_detalle, cantidad, precio, sub_total, id_orden, id_producto
+    FROM 
+        OrdenDetalles
+    WHERE 
+        id_orden_detalle = @id_orden_detalle;
+
+    --Manejo de error si no se encuentra
+    IF @@ROWCOUNT = 0
+        RAISERROR ('No se encontró el detalle de la orden con el ID proporcionado', 16, 1);
+END;
+GO
+
+--LISTAR TODOS LOS DATOS DE LA TABLA 
+CREATE PROCEDURE ListarDetallesDeOrden
+    @id_orden Int
+AS
+BEGIN
+    SELECT 
+        od.id_orden_detalle, od.cantidad, od.precio, od.sub_total, od.id_producto, p.nombre AS nombre_producto
+    FROM 
+        OrdenDetalles od
+    LEFT JOIN 
+        Productos p ON od.id_producto = p.id_producto
+    WHERE 
+        od.id_orden = @id_orden;
+END;
+GO
+
+
+
 
 
 
