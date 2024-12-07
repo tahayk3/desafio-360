@@ -316,7 +316,7 @@ BEGIN
 END;
 GO
 
---Eliminar producto
+--Eliminar estado
 CREATE PROCEDURE EliminarEstado
     @id_estado Int
 AS
@@ -457,6 +457,26 @@ BEGIN
 END;
 GO
 
+--Inactivar producto
+CREATE PROCEDURE InactivarProducto
+    @id_producto Int,
+    @id_estado Int
+AS
+BEGIN
+    --Ver si el producto existe
+    IF EXITS (SELECT 1 FROM PRODUCTOS WHERE id_producto = @id_producto)
+    BEGIN
+        UPDATE Productos
+        SET id_estado = @id_estado
+        WHERE id_producto = @id_producto;
+        PRINT 'Producto inactivado correctamente';
+    END
+    ELSE
+        PRINT 'Error: producto no encontrado';
+    END
+END;
+GO
+
 
 ---------------------PROCEDIMIENTOS ALMACENADOS PARA USUARIOS-------------------
 --Insertar
@@ -519,7 +539,7 @@ BEGIN
 END;
 GO
 
---Eliminar producto
+--Eliminar usuario
 CREATE PROCEDURE EliminarUsuario
     @id_usuario Int
 AS
@@ -617,7 +637,7 @@ BEGIN
 END;
 GO
 
---Eliminar producto
+--Eliminar orden detalle
 CREATE PROCEDURE EliminarOrdenDetalle
     @id_orden_detalle Int
 AS
@@ -729,7 +749,7 @@ BEGIN
 END;
 GO  
 
---Eliminar producto
+--Eliminar orden
 CREATE PROCEDURE EliminarOrden
     @id_orden Int
 AS
@@ -817,7 +837,7 @@ BEGIN
 END;
 GO
 
---Eliminar producto
+--Eliminar rol
 CREATE PROCEDURE EliminarRol
     @id_rol Int
 AS
@@ -853,17 +873,70 @@ GO
 
 ---------------------PROCEDIMIENTOS ALMACENADOS PARA CLIENTES-------------------
 --Insertar
+CREATE PROCEDURE InsertarCliente
+    @razon_social Varchar(250),
+    @nombre_comercial Varchar(340),
+    @direccion_entrega Varchar(60),
+    @telefono Int,
+    @correo_electronico Varchar(45)
+AS
+BEGIN
+    INSERT INTO Clientes (razon_social, nombre_comercial, direccion_entrega, telefono, correo_electronico)
+    VALUES (@razon_social, @nombre_comercial, @direccion_entrega, @telefono, @correo_electronico);
 
+    SELECT SCOPE_IDENTITY() AS id_cliente; -- Devuelve el ID del registro insertado
+END;
+GO
 
 --Actualizar
+CREATE PROCEDURE ActualizarCliente
+    @id_cliente Int,
+    @razon_social Varchar(250),
+    @nombre_comercial Varchar(340),
+    @direccion_entrega Varchar(60),
+    @telefono Int,
+    @correo_electronico Varchar(45)
+AS
+BEGIN
+    UPDATE Clientes
+    SET 
+        razon_social = @razon_social,
+        nombre_comercial = @nombre_comercial,
+        direccion_entrega = @direccion_entrega,
+        telefono = @telefono,
+        correo_electronico = @correo_electronico
+    WHERE id_cliente = @id_cliente;
+END;
+GO
 
-
---Eliminar producto
-
+--Eliminar cliente
+CREATE PROCEDURE EliminarCliente
+    @id_cliente Int
+AS
+BEGIN
+    DELETE FROM Clientes
+    WHERE id_cliente = @id_cliente;
+END;
+GO
 
 --Consultar por id
-
+CREATE PROCEDURE BuscarClientePorId
+    @id_cliente Int
+AS
+BEGIN
+    SELECT id_cliente, razon_social, nombre_comercial, direccion_entrega, telefono, correo_electronico
+    FROM Clientes
+    WHERE id_cliente = @id_cliente;
+END;
+GO
 
 --Listar todos los datos de la tabla 
-
+CREATE PROCEDURE ListarClientes
+AS
+BEGIN
+    SELECT id_cliente, razon_social, nombre_comercial, direccion_entrega, telefono, correo_electronico
+    FROM Clientes
+    ORDER BY razon_social ASC;
+END;
+GO
 
