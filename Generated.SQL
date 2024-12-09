@@ -940,3 +940,87 @@ BEGIN
 END;
 GO
 
+
+---------------------PROCEDIMIENTOS ALMACENADOS PARA categoria productos-------------------
+--Insertar
+CREATE PROCEDURE InsertarCategoriaProducto
+    @nombre_categoria Varchar(45),
+    @fecha_creacion Datetime,
+    @id_estado Int
+AS
+BEGIN
+    INSERT INTO CategoriasProductos (nombre_categoria, fecha_creacion, id_estado)
+    VALUES (@nombre_categoria, @fecha_creacion, @id_estado);
+
+    SELECT SCOPE_IDENTITY() AS id_categoria_producto; -- Devuelve el ID del registro insertado
+END;
+GO
+
+--Actualizar
+CREATE PROCEDURE ActualizarCategoriaProducto
+    @id_categoria_producto Int,
+    @nombre_categoria Varchar(45),
+    @fecha_creacion Datetime,
+    @id_estado Int
+AS
+BEGIN
+    UPDATE CategoriasProductos
+    SET 
+        nombre_categoria = @nombre_categoria,
+        fecha_creacion = @fecha_creacion,
+        id_estado = @id_estado
+    WHERE id_categoria_producto = @id_categoria_producto;
+END;
+GO
+
+--Eliminar categoria producto
+CREATE PROCEDURE EliminarCategoriaProducto
+    @id_categoria_producto Int
+AS
+BEGIN
+    DELETE FROM CategoriasProductos
+    WHERE id_categoria_producto = @id_categoria_producto;
+END;
+GO
+
+--Consultar por id
+CREATE PROCEDURE BuscarCategoriaProductoPorId
+    @id_categoria_producto Int
+AS
+BEGIN
+    SELECT 
+        cp.id_categoria_producto,
+        cp.nombre_categoria,
+        cp.fecha_creacion,
+        cp.id_estado,
+        e.nombre_estado
+    FROM 
+        CategoriasProductos cp
+    LEFT JOIN 
+        Estado e ON cp.id_estado = e.id_estado
+    WHERE 
+        cp.id_categoria_producto = @id_categoria_producto;
+END;
+GO
+
+--Listar todos los datos de la tabla 
+CREATE PROCEDURE ListarCategoriasProductos
+AS
+BEGIN
+    SELECT 
+        cp.id_categoria_producto,
+        cp.nombre_categoria,
+        cp.fecha_creacion,
+        cp.id_estado,
+        e.nombre_estado
+    FROM 
+        CategoriasProductos cp
+    LEFT JOIN 
+        Estado e ON cp.id_estado = e.id_estado
+    ORDER BY 
+        cp.nombre_categoria ASC;
+END;
+GO
+
+
+
