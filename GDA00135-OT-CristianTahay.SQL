@@ -608,6 +608,7 @@ BEGIN
     SELECT SCOPE_IDENTITY() AS id_orden_detalle;
 END;
 GO
+
 --Actualizar
 CREATE PROCEDURE ActualizarOrdenDetalle
     @id_orden_detalle Int,
@@ -1020,6 +1021,92 @@ BEGIN
     ORDER BY 
         cp.nombre_categoria ASC;
 END;
+GO
+
+
+
+-------------------VISTAS-------------------
+--a Total de Productos Activos con Stock Mayor a 0
+CREATE VIEW TotalProductosActivosStock
+AS
+    SELECT COUNT(*) AS TotalProductosActivos
+    FROM productos
+
+    WHERE id_estado = 1
+    AND stock > 0;  
+GO
+
+--b Total de Quetzales en Órdenes del Mes de Agosto 2024
+CREATE VIEW TotalQuetzalesAgosto2024
+AS
+    SELECT SUM(total_orden) AS TotalQuetzales
+    FROM Orden
+    WHERE 
+    MONTH(fecha_creacion) = 8
+    AND YEAR(fecha_creacion) = 2024
+GO
+
+--c Top 10 Clientes con Mayor Consumo de Órdenes (Histórico)
+CREATE VIEW Top10ClientesMayorConsumo
+AS
+SELECT 
+    c.id_cliente,
+    c.razon_social,
+    c.nombre_comercial,
+    SUM(o.total_orden) AS TotalConsumo
+FROM 
+    Clientes c
+JOIN 
+    Orden o ON c.id_cliente = o.id_usuario
+GROUP BY 
+    c.id_cliente, c.razon_social, c.nombre_comercial
+ORDER BY 
+    TotalConsumo DESC
+LIMIT 10;
+GO
+
+--d Top 10 Productos Más Vendidos en Orden Ascendente
+CREATE VIEW Top10ProductosMasVendidos
+AS
+SELECT 
+    p.id_producto,
+    p.nombre AS NombreProducto,
+    SUM(od.cantidad) AS TotalVendido
+FROM 
+    Productos p
+JOIN 
+    OrdenDetalles od ON p.id_producto = od.id_producto
+GROUP BY 
+    p.id_producto, p.nombre
+ORDER BY 
+    TotalVendido ASC
+LIMIT 10;
+GO
+
+
+
+--USANDO PA y vistas 
+SELECT * FROM TotalProductosActivosStock;
+GO
+
+SELECT * FROM Top10ClientesMayorConsumo;
+GO
+
+EXEC ListarCategoriasProductos;
+GO
+
+
+EXEC EliminarOrden @id_orden = 5;
+GO
+
+EXEC ActualizarEstado @id_estado = 3, @nombre = 'Inactivo';
+GO
+
+EXEC InsertarOrdenDetalle 
+    @cantidad = 5, 
+    @precio = 150.75, 
+    @id_orden = 101, 
+    @id_producto = 45;
 GO
 
 
