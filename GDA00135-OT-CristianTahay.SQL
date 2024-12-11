@@ -263,22 +263,22 @@ go
 
 
 
-ALTER TABLE [Usuarios] ADD CONSTRAINT [Relationship12] FOREIGN KEY ([id_estado]) REFERENCES [Estado] ([id_estado]) ON UPDATE NO ACTION ON DELETE NO ACTION
+ALTER TABLE [Usuarios] ADD CONSTRAINT [Relationship12] FOREIGN KEY ([id_estado]) REFERENCES [Estados] ([id_estado]) ON UPDATE NO ACTION ON DELETE NO ACTION
 go
 
 
 
-ALTER TABLE [Productos] ADD CONSTRAINT [Relationship14] FOREIGN KEY ([id_estado]) REFERENCES [Estado] ([id_estado]) ON UPDATE NO ACTION ON DELETE NO ACTION
+ALTER TABLE [Productos] ADD CONSTRAINT [Relationship14] FOREIGN KEY ([id_estado]) REFERENCES [Estados] ([id_estado]) ON UPDATE NO ACTION ON DELETE NO ACTION
 go
 
 
 
-ALTER TABLE [Orden] ADD CONSTRAINT [Relationship15] FOREIGN KEY ([id_estado]) REFERENCES [Estado] ([id_estado]) ON UPDATE NO ACTION ON DELETE NO ACTION
+ALTER TABLE [Orden] ADD CONSTRAINT [Relationship15] FOREIGN KEY ([id_estado]) REFERENCES [Estados] ([id_estado]) ON UPDATE NO ACTION ON DELETE NO ACTION
 go
 
 
 
-ALTER TABLE [CategoriasProductos] ADD CONSTRAINT [Relationship16] FOREIGN KEY ([id_estado]) REFERENCES [Estado] ([id_estado]) ON UPDATE NO ACTION ON DELETE NO ACTION
+ALTER TABLE [CategoriasProductos] ADD CONSTRAINT [Relationship16] FOREIGN KEY ([id_estado]) REFERENCES [Estados] ([id_estado]) ON UPDATE NO ACTION ON DELETE NO ACTION
 go
 
 
@@ -457,14 +457,14 @@ BEGIN
 END;
 GO
 
---Inactivar producto
+-- Inactivar producto
 CREATE PROCEDURE InactivarProducto
     @id_producto Int,
     @id_estado Int
 AS
 BEGIN
-    --Ver si el producto existe
-    IF EXITS (SELECT 1 FROM PRODUCTOS WHERE id_producto = @id_producto)
+    -- Ver si el producto existe
+    IF EXISTS (SELECT 1 FROM PRODUCTOS WHERE id_producto = @id_producto)
     BEGIN
         UPDATE Productos
         SET id_estado = @id_estado
@@ -472,10 +472,12 @@ BEGIN
         PRINT 'Producto inactivado correctamente';
     END
     ELSE
+    BEGIN
         PRINT 'Error: producto no encontrado';
     END
 END;
 GO
+
 
 
 ---------------------PROCEDIMIENTOS ALMACENADOS PARA USUARIOS-------------------
@@ -870,8 +872,6 @@ END;
 GO
 
 
-
-
 ---------------------PROCEDIMIENTOS ALMACENADOS PARA CLIENTES-------------------
 --Insertar
 CREATE PROCEDURE InsertarCliente
@@ -1046,10 +1046,11 @@ AS
     AND YEAR(fecha_creacion) = 2024
 GO
 
---c Top 10 Clientes con Mayor Consumo de Órdenes (Histórico)
+--C Top 10 Clientes con Mayor Consumo de Órdenes (Histórico)
 CREATE VIEW Top10ClientesMayorConsumo
 AS
 SELECT 
+    TOP 10
     c.id_cliente,
     c.razon_social,
     c.nombre_comercial,
@@ -1061,14 +1062,15 @@ JOIN
 GROUP BY 
     c.id_cliente, c.razon_social, c.nombre_comercial
 ORDER BY 
-    TotalConsumo DESC
-LIMIT 10;
+    TotalConsumo DESC;
 GO
+
 
 --d Top 10 Productos Más Vendidos en Orden Ascendente
 CREATE VIEW Top10ProductosMasVendidos
 AS
 SELECT 
+    TOP 10
     p.id_producto,
     p.nombre AS NombreProducto,
     SUM(od.cantidad) AS TotalVendido
@@ -1079,35 +1081,11 @@ JOIN
 GROUP BY 
     p.id_producto, p.nombre
 ORDER BY 
-    TotalVendido ASC
-LIMIT 10;
+    TotalVendido ASC;
 GO
 
 
 
---USANDO PA y vistas 
-SELECT * FROM TotalProductosActivosStock;
-GO
-
-SELECT * FROM Top10ClientesMayorConsumo;
-GO
-
-EXEC ListarCategoriasProductos;
-GO
-
-
-EXEC EliminarOrden @id_orden = 5;
-GO
-
-EXEC ActualizarEstado @id_estado = 3, @nombre = 'Inactivo';
-GO
-
-EXEC InsertarOrdenDetalle 
-    @cantidad = 5, 
-    @precio = 150.75, 
-    @id_orden = 101, 
-    @id_producto = 45;
-GO
 
 
 
