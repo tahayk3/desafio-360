@@ -1,4 +1,4 @@
-const { getUsers, getUser, createUser } = require("../procedures/userProcedures");
+const { getUsers, getUser, createUser, desactiveUser, changeUser } = require("../procedures/userProcedures");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -10,10 +10,10 @@ exports.getAllUsers = async (req, res) => {
 };
 
 exports.getUserById = async (req, res) =>{
-  const {id_usuario} = req.params;
-  console.log(req.params);
+  const {id} = req.params;
+
   try{
-    const result = await getUser(id_usuario);
+    const result = await getUser(id);
     res.status(201).json(result);
   } catch(error){
     res.status(500).json({error: error.message})
@@ -30,3 +30,29 @@ exports.addUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+exports.deleteUser = async (req, res) =>{
+  const {id} = req.params;
+  try{
+    const result = await desactiveUser(id);
+    res.status(201).json(result);
+  }catch(error){
+    res.status(500).json({error: error.message})
+  }
+}
+
+exports.updateUser = async (req, res) =>{
+  const {id} = req.params;
+  const { correo, nombre_completo, password, telefono, fecha_nacimiento, id_rol, id_cliente, id_estado } = req.body;
+  console.log(req.body);
+  try{
+    const result = await changeUser(id, correo, nombre_completo, password, telefono, fecha_nacimiento, id_rol, id_cliente, id_estado);
+    res.status(201).json(result);
+  }
+  catch(error){
+    res.status(500).json({error: error.message})
+  }
+}
+
+
