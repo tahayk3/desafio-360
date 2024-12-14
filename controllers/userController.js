@@ -1,13 +1,42 @@
-const { getUsers, getUser, createUser, desactiveUser, changeUser } = require("../procedures/userProcedures");
+const { createUser, getUsers, getUser, desactiveUser, changeUser } = require("../procedures/userProcedures");
 
-exports.getAllUsers = async (req, res) => {
+exports.addUser = async (req, res) => {
+  const userData = req.body;
+
+  console.log(userData);
   try {
-    const users = await getUsers();
-    res.json(users);
+    const result = await createUser(userData);
+    res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.updateUser = async (req, res) =>{
+  const {id} = req.params;
+  const userData = req.body;
+  userData.id_usuario = id;
+
+  console.log(userData);
+  
+  try{
+    const result = await changeUser(userData);
+    res.status(200).json(result);
+  }catch(error)
+  {
+    res.status(500).json({error: error.message});
+  }
+}
+
+exports.deleteUser = async (req, res) =>{
+  const {id} = req.params;
+  try{
+    const result = await desactiveUser(id);
+    res.status(201).json(result);
+  }catch(error){
+    res.status(500).json({error: error.message})
+  }
+}
 
 exports.getUserById = async (req, res) =>{
   const {id} = req.params;
@@ -20,39 +49,11 @@ exports.getUserById = async (req, res) =>{
   }
 }
 
-exports.addUser = async (req, res) => {
-  const { correo, nombre_completo, password, telefono, fecha_nacimiento, fecha_creacion, id_rol, id_cliente, id_estado } = req.body;
-  console.log(req.body);
+exports.getAllUsers = async (req, res) => {
   try {
-    const result = await createUser(correo, nombre_completo, password, telefono, fecha_nacimiento, fecha_creacion, id_rol, id_cliente, id_estado);
-    res.status(201).json(result);
+    const users = await getUsers();
+    res.json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
-
-exports.deleteUser = async (req, res) =>{
-  const {id} = req.params;
-  try{
-    const result = await desactiveUser(id);
-    res.status(201).json(result);
-  }catch(error){
-    res.status(500).json({error: error.message})
-  }
-}
-
-exports.updateUser = async (req, res) =>{
-  const {id} = req.params;
-  const { correo, nombre_completo, password, telefono, fecha_nacimiento, id_rol, id_cliente, id_estado } = req.body;
-  console.log(req.body);
-  try{
-    const result = await changeUser(id, correo, nombre_completo, password, telefono, fecha_nacimiento, id_rol, id_cliente, id_estado);
-    res.status(201).json(result);
-  }
-  catch(error){
-    res.status(500).json({error: error.message})
-  }
-}
-
-

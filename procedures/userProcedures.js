@@ -1,34 +1,31 @@
 const sequelize = require("../config/database");
 
-async function getUsers() {
-  const [results] = await sequelize.query("EXEC ListarUsuarios");
+
+async function createUser(userData) {
+  // Convertimos los datos del usuario en JSON
+  const jsonData = JSON.stringify(userData);
+
+  const [results] = await sequelize.query(
+    `
+    EXEC InsertarUsuario 
+    @data = :data
+    `, 
+    {
+      replacements: { data: jsonData }, 
+    }
+  );
   return results;
 }
 
-async function getUser(id_usuario) {
-  const [results] = await sequelize.query(
-    `EXEC ConsultarUsuarioPorID
-    @id_usuario = :id_usuario
-    `,  {
-      replacements: {id_usuario}
-    });
-    return results;
-}
+async function changeUser(userData){
+  //Convertimos los datos del usuario en JSON
+  const jsonData = JSON.stringify(userData);
 
-async function createUser(correo, nombre_completo, password, telefono, fecha_nacimiento, fecha_creacion, id_rol, id_cliente, id_estado) {
   const [results] = await sequelize.query(
-    `EXEC InsertarUsuario 
-    @correo = :correo,
-    @nombre_completo = :nombre_completo,
-    @password = :password,
-    @telefono = :telefono,
-    @fecha_nacimiento = :fecha_nacimiento,
-    @fecha_creacion = :fecha_creacion,
-    @id_rol = :id_rol,
-    @id_cliente = :id_cliente,
-    @id_estado = :id_estado
+    `EXEC ActualizarUsuario
+    @data = :data
     `, {
-    replacements: { correo, nombre_completo,  password, telefono, fecha_nacimiento, fecha_creacion, id_rol, id_cliente, id_estado  },
+    replacements: {data:jsonData  },
   });
   return results;
 }
@@ -43,25 +40,25 @@ async function desactiveUser(id_usuario){
     return results;
 }
 
-async function changeUser(id_usuario, correo, nombre_completo, password, telefono, fecha_nacimiento, id_rol, id_cliente, id_estado){
+
+async function getUser(id_usuario) {
   const [results] = await sequelize.query(
-    `EXEC ActualizarUsuario
-    @id_usuario = :id_usuario, 
-    @correo = :correo,
-    @nombre_completo = :nombre_completo,
-    @password = :password,
-    @telefono = :telefono,
-    @fecha_nacimiento = :fecha_nacimiento,
-    @id_rol = :id_rol,
-    @id_cliente = :id_cliente,
-    @id_estado = :id_estado
-    `, {
-    replacements: {id_usuario, correo, nombre_completo,  password, telefono, fecha_nacimiento, id_rol, id_cliente, id_estado  },
-  });
+    `EXEC ConsultarUsuarioPorID
+    @id_usuario = :id_usuario
+    `,  {
+      replacements: {id_usuario}
+    });
+    return results;
+}
+
+
+async function getUsers() {
+  const [results] = await sequelize.query("EXEC ListarUsuarios");
   return results;
 }
 
- 
+
+
 module.exports = { getUsers, createUser, getUser, desactiveUser, changeUser };
 
 

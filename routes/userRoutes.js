@@ -3,10 +3,10 @@ const { getAllUsers, getUserById, addUser, deleteUser, updateUser  } = require("
 
 const router = express.Router();
 
+router.post("/", addUser);
+router.patch("/:id", updateUser);
+router.delete("/:id", deleteUser);
 router.get("/", getAllUsers);
 router.get("/:id", getUserById);
-router.post("/", addUser);
-router.delete("/:id", deleteUser);
-router.patch("/:id", updateUser);
 
 module.exports = router;
