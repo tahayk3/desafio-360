@@ -1,4 +1,4 @@
-const { createUser, getUsers, getUser, desactiveUser, changeUser } = require("../procedures/userProcedures");
+const { createUser, getUser, desactiveUser, changeUser, getUsers } = require("../procedures/userProcedures");
 
 exports.addUser = async (req, res) => {
   const userData = req.body;
@@ -30,6 +30,12 @@ exports.updateUser = async (req, res) =>{
 
 exports.deleteUser = async (req, res) =>{
   const {id} = req.params;
+
+  if (!id || isNaN(Number(id))) {
+    return res.status(400).json({ error: "ID inválido o no proporcionado" });
+  }
+  console.log(id);
+
   try{
     const result = await desactiveUser(id);
     res.status(201).json(result);
@@ -40,6 +46,10 @@ exports.deleteUser = async (req, res) =>{
 
 exports.getUserById = async (req, res) =>{
   const {id} = req.params;
+
+  if (!id || isNaN(Number(id))) {
+    return res.status(400).json({ error: "ID inválido o no proporcionado" });
+  }
 
   try{
     const result = await getUser(id);

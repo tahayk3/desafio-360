@@ -1,15 +1,20 @@
 const express = require("express");
+
 const sequelize = require("./config/database");
+
 const userRoutes = require("./routes/userRoutes");
-const estadoRoutes = require("./routes/estadoRoutes")
+const estadoRoutes = require("./routes/estadoRoutes");
+const productoRoutes = require("./routes/productoRoutes");
+
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/usuarios", userRoutes);
 app.use("/api/v1/estados", estadoRoutes);
+app.use("/api/v1/productos", productoRoutes);
 
 sequelize
   .authenticate()
