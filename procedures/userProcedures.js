@@ -1,8 +1,20 @@
 const sequelize = require("../config/database");
+const bcrypt = require('bcrypt');
+
 
 async function createUser(userData) {
-  // Convertimos los datos del usuario en JSON
-  const jsonData = JSON.stringify(userData);
+
+    // Cifrar la contraseña
+  const hashedPassword = await bcrypt.hash(userData.password, 10);
+
+  // Crear un nuevo objeto con la contraseña cifrada
+  const userDataWithHashedPassword = {
+    ...userData,
+    password: hashedPassword,
+  };
+
+  // Convertir los datos del usuario en JSON
+  const jsonData = JSON.stringify(userDataWithHashedPassword);
 
   // Ejecutamos la consulta con parámetros de salida
   const [results] = await sequelize.query(
