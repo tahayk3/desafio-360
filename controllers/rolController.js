@@ -1,32 +1,33 @@
-const {createEstado, changeEstado, desactiveEstado, getEstado, getEstados} = require("../procedures/estadoProcedures");
+const {createRol, changeRol, desactiveRol, getRol, getRoles} = require("../procedures/rolProcedures")
 
-exports.addEstado = async (req,res) =>{
+
+exports.addRol = async (req,res) =>{
     const userData = req.body;
     console.log(userData);
     try{
-        const result = await createEstado(userData);
+        const result = await createRol(userData);
         res.status(201).json(result);
     }catch(error){
         res.status(500).json({error: error.message})
     }
 }
 
-exports.updateEstado = async(req,res) =>{
+exports.updateRol = async(req,res) =>{
     const {id} = req.params;
     const userData = req.body;
-    userData.id_estado = id;
+    userData.id_rol = id;
 
     console.log(userData);
 
     try {
-        const result = await changeEstado(userData);
+        const result = await changeRol(userData);
         res.status(201).json(result);
     } catch(error){
         res.status(500).json({error: error.message});
     }
 }
 
-exports.deleteEstado = async(req,res) =>{
+exports.deleteRol = async(req,res) =>{
     const {id} = req.params;
 
     if (!id || isNaN(Number(id))) {
@@ -35,14 +36,14 @@ exports.deleteEstado = async(req,res) =>{
     console.log(id);
 
     try {
-        const result = await desactiveEstado(id);
+        const result = await desactiveRol(id);
         res.status(200).json(result);
     } catch(error){
         res.status(500).json({error: error.message});
     }
 }
 
-exports.getEstadoById = async (req, res) =>{
+exports.getRolById = async (req, res) =>{
     const {id} = req.params;
 
     if (!id || isNaN(Number(id))) {
@@ -50,16 +51,16 @@ exports.getEstadoById = async (req, res) =>{
     }
   
     try{
-      const result = await getEstado(id);
+      const result = await getRol(id);
       res.status(201).json(result);
     } catch(error){
       res.status(500).json({error: error.message})
     }
 }
 
-exports.getAllEstados = async (req, res) => {
+exports.getAllRoles = async (req, res) => {
     try {
-      const users = await getEstados();
+      const users = await getRoles();
       res.json(users);
     } catch (error) {
       res.status(500).json({ error: error.message });

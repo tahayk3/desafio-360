@@ -5,6 +5,9 @@ const sequelize = require("./config/database");
 const userRoutes = require("./routes/userRoutes");
 const estadoRoutes = require("./routes/estadoRoutes");
 const productoRoutes = require("./routes/productoRoutes");
+const rolRoutes = require("./routes/rolRoutes");
+const categoriaProductosRoutes = require("./routes/categoriaProductosRoutes");
+const ordenRoutes = require("./routes/ordenRoutes");
 
 require("dotenv").config();
 
@@ -15,6 +18,9 @@ app.use(express.json());
 app.use("/api/v1/usuarios", userRoutes);
 app.use("/api/v1/estados", estadoRoutes);
 app.use("/api/v1/productos", productoRoutes);
+app.use("/api/v1/roles", rolRoutes);
+app.use("/api/v1/categoriaproductos", categoriaProductosRoutes);
+app.use("/api/v1/ordenes", ordenRoutes);
 
 sequelize
   .authenticate()

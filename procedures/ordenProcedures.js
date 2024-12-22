@@ -53,6 +53,31 @@ async function changeOrden(userData) {
 }
 
 
+async function changeOrdenEncabezado(userData) {
+    // Convertimos los datos de la orden en JSON
+    const jsonData = JSON.stringify(userData);
+
+    const [results] = await sequelize.query(
+        `
+        DECLARE @code INT;
+        DECLARE @message NVARCHAR(MAX);
+
+        EXEC ActualizarOrdenEncabezado
+            @data = :data,
+            @code = @code OUTPUT,
+            @message = @message OUTPUT;
+
+        SELECT @code AS code, @message AS message;
+        `,
+        {
+            replacements: { data: jsonData }, // Pasar el JSON al procedimiento
+            type: sequelize.QueryTypes.SELECT, // Tipo de consulta para SELECT
+        }
+    );
+    return results;
+}
+
+
 async function getOrden(id_orden) {
     const [results] = await sequelize.query(
         `EXEC BuscarOrden
@@ -68,5 +93,5 @@ async function getOrdenes(){
     return results;
 }
 
-module.exports = { createOrden, changeOrden, getOrden, getOrdenes }
+module.exports = { createOrden, changeOrden, getOrden, getOrdenes, changeOrdenEncabezado };
 
