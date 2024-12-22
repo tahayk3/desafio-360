@@ -14,11 +14,11 @@ La API está configurada para ejecutarse en el puerto `3000`.
 
 
 #### Ejemplos de endpoits localizados en app.js y en la carpeta de routes:
-/api/v1/usuarios
-/api/v1/estados
-/api/v1/productos
-/api/v1/roles
-/api/v1/categoriaproductos
-/api/v1/ordenes", ordenRoute
+- `/api/v1/usuarios`
+- `/api/v1/estados`
+- `/api/v1/productos`
+- `/api/v1/roles`
+- `/api/v1/categoriaproductos`
+- `/api/v1/ordenes`
 
 
