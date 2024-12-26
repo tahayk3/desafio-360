@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors'); // Import the cors middleware
 
 const sequelize = require("./config/database");
 
@@ -13,6 +14,13 @@ require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Configure CORS middleware
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  allowedHeaders: ['Content-Type', 'Authorization'] 
+}));
 
 app.use(express.json());
 app.use("/api/v1/usuarios", userRoutes);
