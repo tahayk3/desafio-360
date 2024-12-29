@@ -19,13 +19,19 @@ exports.updateUser = async (req, res) => {
 
   const idJwt = req.user.id;        // ID del usuario autenticado (JWT)
   const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+  const activoJwt = req.user.activo; // estado del usuario
 
   console.log("idJwt (usuario autenticado):", idJwt);
   console.log("rolJwt (rol del JWT):", rolJwt);
+  console.log("activoJwt (activo del JWT):", activoJwt);
   console.log("id (registro a modificar):", id);
   console.log("userData recibido:", userData);
 
   try {
+    if(activoJwt === false){
+      return res.status(403).json({ message: "Sin permisos para realizar esta accion" });
+    }
+
     // Reglas para un cliente
     if (rolJwt === 2 && parseInt(idJwt) !== parseInt(id)) {
       return res.status(403).json({ message: "No tienes permisos para modificar este usuario." });
@@ -58,16 +64,37 @@ exports.updateUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) =>{
-  const {id} = req.params;
+  const {id} = req.params; // ID del registro que se quiere modificar
 
-  if (!id || isNaN(Number(id))) {
-    return res.status(400).json({ error: "ID inválido o no proporcionado" });
-  }
-  console.log(id);
+  const idJwt = req.user.id;       // ID del usuario autenticado (JWT)
+  const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+  const activoJwt = req.user.activo;
+
+  console.log("idJwt (usuario autenticado):", idJwt);
+  console.log("rolJwt (rol del JWT):", rolJwt);
+  console.log("id (registro a modificar):", id);
 
   try{
-    const result = await desactiveUser(id);
-    res.status(201).json(result);
+
+    if (!id || isNaN(Number(id))) {
+      return res.status(400).json({ error: "ID inválido o no proporcionado" });
+    }
+
+    if(activoJwt === false){
+      return res.status(403).json({ message: "Sin permisos para realizar esta accion" });
+    }
+  
+    //REGLAS PARA CLIENTE
+    if (rolJwt === 2 && parseInt(idJwt) !== parseInt(id)) {
+      return res.status(403).json({ message: "No tienes permisos para modificar este registro." });
+    }
+  
+    //REGLAS PARA UN OPERADOR
+    if (rolJwt === 1 && parseInt(idJwt) !== parseInt(id)) {
+      //AQUI LA COSA
+      const result = await desactiveUser(id);
+      res.status(201).json(result);
+    }
   }catch(error){
     res.status(500).json({error: error.message})
   }
@@ -81,8 +108,31 @@ exports.getUserById = async (req, res) =>{
   }
 
   try{
-    const result = await getUser(id);
-    res.status(201).json(result);
+    const idJwt = req.user.id;       // ID del usuario autenticado (JWT)
+    const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+    const activoJwt = req.user.activo;
+
+    console.log("idJwt (usuario autenticado):", idJwt);
+    console.log("rolJwt (rol del JWT):", rolJwt);
+    console.log("activoJwt (activo del JWT):", activoJwt);
+    console.log("id (registro a modificar):", id);
+
+    //REGLAS PARA CLIENTE
+    if (rolJwt === 2 && activoJwt === true && parseInt(idJwt) === parseInt(id)) {
+      const result = await getUser(id);
+      res.status(201).json(result);
+    }
+
+    //REGLAS PARA OPERADOR
+    else if (rolJwt === 1 && activoJwt === true) {
+      const result = await getUser(id);
+      res.status(201).json(result);
+    }
+    else
+    {
+      return res.status(403).json({ message: "No tienes permisos para acceder a esta informacion." });
+    }
+
   } catch(error){
     res.status(500).json({error: error.message})
   }
@@ -90,8 +140,26 @@ exports.getUserById = async (req, res) =>{
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await getUsers();
-    res.json(users);
+
+    const idJwt = req.user.id;       // ID del usuario autenticado (JWT)
+    const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+    const activoJwt = req.user.activo;
+
+    console.log("idJwt (usuario autenticado):", idJwt);
+    console.log("rolJwt (rol del JWT):", rolJwt);
+    console.log("activoJwt (activo del JWT):", activoJwt);
+
+
+    //REGLAS PARA OPERADOR
+    if (rolJwt === 1 && activoJwt === true) {
+      const users = await getUsers();
+      res.status(201).json(users);
+    }
+    else
+    {
+      return res.status(403).json({ message: "No tienes permisos para acceder a esta informacion." });
+    }
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

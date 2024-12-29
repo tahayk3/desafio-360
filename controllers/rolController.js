@@ -5,8 +5,22 @@ exports.addRol = async (req,res) =>{
     const userData = req.body;
     console.log(userData);
     try{
+        const idJwt = req.user.id;        // ID del usuario autenticado (JWT)
+        const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+        const activoJwt = req.user.activo; // estado del usuario
+
+        console.log("idJwt (usuario autenticado):", idJwt);
+        console.log("rolJwt (rol del JWT):", rolJwt);
+        console.log("activoJwt (activo del JWT):", activoJwt);
+
+        //PERMISOS, debe estar activo y ser operador = 1 para poder añadir
+        if(activoJwt === false || rolJwt !== 1){
+            return res.status(403).json({ message: "Sin permisos para realizar esta accion" });
+        }
+
         const result = await createRol(userData);
         res.status(201).json(result);
+
     }catch(error){
         res.status(500).json({error: error.message})
     }
@@ -20,6 +34,19 @@ exports.updateRol = async(req,res) =>{
     console.log(userData);
 
     try {
+        const idJwt = req.user.id;        // ID del usuario autenticado (JWT)
+        const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+        const activoJwt = req.user.activo; // estado del usuario
+
+        console.log("idJwt (usuario autenticado):", idJwt);
+        console.log("rolJwt (rol del JWT):", rolJwt);
+        console.log("activoJwt (activo del JWT):", activoJwt);
+
+        //PERMISOS, debe estar activo y ser operador = 1 para poder añadir
+        if(activoJwt === false || rolJwt !== 1){
+            return res.status(403).json({ message: "Sin permisos para realizar esta accion" });
+        }
+
         const result = await changeRol(userData);
         res.status(201).json(result);
     } catch(error){
@@ -36,6 +63,19 @@ exports.deleteRol = async(req,res) =>{
     console.log(id);
 
     try {
+        const idJwt = req.user.id;        // ID del usuario autenticado (JWT)
+        const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+        const activoJwt = req.user.activo; // estado del usuario
+
+        console.log("idJwt (usuario autenticado):", idJwt);
+        console.log("rolJwt (rol del JWT):", rolJwt);
+        console.log("activoJwt (activo del JWT):", activoJwt);
+
+        //PERMISOS, debe estar activo y ser operador = 1 para poder añadir
+        if(activoJwt === false || rolJwt !== 1){
+            return res.status(403).json({ message: "Sin permisos para realizar esta accion" });
+        }
+        
         const result = await desactiveRol(id);
         res.status(200).json(result);
     } catch(error){

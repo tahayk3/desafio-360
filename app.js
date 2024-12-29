@@ -25,10 +25,11 @@ app.use(cors({
 app.use(express.json());
 app.use("/api/v1/usuarios", userRoutes);
 app.use("/api/v1/estados", estadoRoutes);
-app.use("/api/v1/productos", productoRoutes);
 app.use("/api/v1/roles", rolRoutes);
+app.use("/api/v1/productos", productoRoutes);
 app.use("/api/v1/categoriaproductos", categoriaProductosRoutes);
 app.use("/api/v1/ordenes", ordenRoutes);
+
 
 sequelize
   .authenticate()

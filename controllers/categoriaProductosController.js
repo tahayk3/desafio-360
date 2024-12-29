@@ -5,6 +5,20 @@ exports.addCategoriaProducto = async (req, res) => {
 
   console.log(userData);
   try {
+
+    const idJwt = req.user.id;        // ID del usuario autenticado (JWT)
+    const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+    const activoJwt = req.user.activo; // estado del usuario
+
+    console.log("idJwt (usuario autenticado):", idJwt);
+    console.log("rolJwt (rol del JWT):", rolJwt);
+    console.log("activoJwt (activo del JWT):", activoJwt);
+
+    //PERMISOS, debe estar activo y ser operador = 1 para poder añadir
+    if(activoJwt === false || rolJwt !== 1){
+      return res.status(403).json({ message: "Sin permisos para realizar esta accion" });
+    }
+
     const result = await createCategoriaProducto(userData);
     res.status(201).json(result);
   } catch (error) {
@@ -20,6 +34,20 @@ exports.updateCategoriaProducto = async (req, res) =>{
   console.log(userData);
   
   try{
+
+    const idJwt = req.user.id;        // ID del usuario autenticado (JWT)
+    const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+    const activoJwt = req.user.activo; // estado del usuario
+
+    console.log("idJwt (usuario autenticado):", idJwt);
+    console.log("rolJwt (rol del JWT):", rolJwt);
+    console.log("activoJwt (activo del JWT):", activoJwt);
+
+    //PERMISOS, debe estar activo y ser operador = 1 para poder añadir
+    if(activoJwt === false || rolJwt !== 1){
+      return res.status(403).json({ message: "Sin permisos para realizar esta accion" });
+    }
+
     const result = await changeCategoriaProducto(userData);
     res.status(200).json(result);
   }catch(error)
@@ -37,6 +65,18 @@ exports.deleteCategoriaProducto = async (req, res) =>{
   console.log(id);
 
   try{
+    const idJwt = req.user.id;        // ID del usuario autenticado (JWT)
+    const rolJwt = req.user.id_rol;  // Rol del usuario autenticado (JWT)
+    const activoJwt = req.user.activo; // estado del usuario
+
+    console.log("idJwt (usuario autenticado):", idJwt);
+    console.log("rolJwt (rol del JWT):", rolJwt);
+    console.log("activoJwt (activo del JWT):", activoJwt);
+
+    //PERMISOS, debe estar activo y ser operador = 1 para poder añadir
+    if(activoJwt === false || rolJwt !== 1){
+      return res.status(403).json({ message: "Sin permisos para realizar esta accion" });
+    }
     const result = await desactiveCategoriaProducto(id);
     res.status(201).json(result);
   }catch(error){
