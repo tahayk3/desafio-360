@@ -284,7 +284,7 @@ GO
 
 CREATE PROCEDURE InsertarEstado
     @data NVARCHAR(MAX),
-    @code INT OUTPUT,       -- 1 para éxito, -0 para fallo
+    @code INT OUTPUT,       -- 1 para ï¿½xito, -0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -297,7 +297,7 @@ BEGIN
             nombre_estado VARCHAR(50)
         );
 
-        -- Inserción y captura de las filas
+        -- Inserciï¿½n y captura de las filas
         INSERT INTO Estados (nombre_estado)
         OUTPUT INSERTED.id_estado, INSERTED.nombre_estado INTO @result
         SELECT nombre_estado
@@ -308,26 +308,26 @@ BEGIN
         -- Comprobar si se insertaron filas
         IF EXISTS (SELECT 1 FROM @result)
         BEGIN
-            SET @code = 1;  -- Operación exitosa
-            SET @message = 'Estado insertado correctamente'; -- Mensaje de éxito
-            -- Retornar lo insertado junto con el código y mensaje
+            SET @code = 1;  -- Operaciï¿½n exitosa
+            SET @message = 'Estado insertado correctamente'; -- Mensaje de ï¿½xito
+            -- Retornar lo insertado junto con el cï¿½digo y mensaje
             SELECT @code AS code, @message AS message, * FROM @result;  -- Incluir code y message en el resultado
         END
         ELSE
         BEGIN
             SET @code = -0;  -- No se insertaron filas
-            SET @message = 'No se insertaron estados, asegúrate de que los datos sean válidos';  -- Mensaje de error
-            -- Incluir code y message también en este caso
-            SELECT @code AS code, @message AS message;  -- Retornar código y mensaje en caso de error
+            SET @message = 'No se insertaron estados, asegï¿½rate de que los datos sean vï¿½lidos';  -- Mensaje de error
+            -- Incluir code y message tambiï¿½n en este caso
+            SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje en caso de error
         END
     END TRY
     BEGIN CATCH
         -- Captura el error
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        -- Retornar código y mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
-        THROW;  -- Lanza la excepción para que el cliente la vea
+        -- Retornar cï¿½digo y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje de error
+        THROW;  -- Lanza la excepciï¿½n para que el cliente la vea
     END CATCH;
 END;
 GO
@@ -340,7 +340,7 @@ GO
 
 CREATE PROCEDURE ActualizarEstado
     @data NVARCHAR(MAX),  -- JSON que contiene los datos
-    @code INT OUTPUT,      -- 1 para éxito, -0 para fallo
+    @code INT OUTPUT,      -- 1 para ï¿½xito, -0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -367,21 +367,21 @@ BEGIN
         BEGIN
             SET @code = -1;  -- Estado no encontrado
             SET @message = 'El estado con el ID proporcionado no existe.';
-            -- Retornar código y mensaje de error
+            -- Retornar cï¿½digo y mensaje de error
             SELECT @code AS code, @message AS message;
             RETURN;
         END
 
-        -- Actualización del nombre_estado
+        -- Actualizaciï¿½n del nombre_estado
         UPDATE E
         SET E.nombre_estado = D.nombre_estado
         FROM Estados E
         INNER JOIN @estadoData D ON E.id_estado = D.id_estado;
 
-        -- Verificar si se realizó la actualización 
+        -- Verificar si se realizï¿½ la actualizaciï¿½n 
         IF @@ROWCOUNT > 0
         BEGIN
-            SET @code = 1;  -- Operación exitosa
+            SET @code = 1;  -- Operaciï¿½n exitosa
             SET @message = 'Estado actualizado correctamente.';
             -- Retornar el estado actualizado
             SELECT @code AS code, @message AS message, E.id_estado, E.nombre_estado
@@ -390,9 +390,9 @@ BEGIN
         END
         ELSE
         BEGIN
-            SET @code = -0;  -- No se actualizó ninguna fila
+            SET @code = -0;  -- No se actualizï¿½ ninguna fila
             SET @message = 'No se pudo actualizar el estado, verifique los datos.';
-            -- Retornar código y mensaje
+            -- Retornar cï¿½digo y mensaje
             SELECT @code AS code, @message AS message;
         END
     END TRY
@@ -400,9 +400,9 @@ BEGIN
         -- Captura el error
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        -- Retornar código y mensaje de error
+        -- Retornar cï¿½digo y mensaje de error
         SELECT @code AS code, @message AS message;
-        THROW;  -- Lanza la excepción para que el cliente la vea
+        THROW;  -- Lanza la excepciï¿½n para que el cliente la vea
     END CATCH;
 END;
 GO
@@ -416,7 +416,7 @@ GO
 
 CREATE PROCEDURE EliminarEstado
     @id_estado INT,        -- ID del estado a eliminar (cambiar estado)
-    @code INT OUTPUT,      -- 1 para éxito, -1 para fallo
+    @code INT OUTPUT,      -- 1 para ï¿½xito, -1 para fallo
     @message NVARCHAR(MAX) OUTPUT -- Mensaje descriptivo
 AS
 BEGIN
@@ -434,22 +434,22 @@ BEGIN
             -- Validar que el cambio fue exitoso
             IF @@ROWCOUNT > 0
             BEGIN
-                SET @code = 1;  -- Operación exitosa
-                SET @message = 'Estado eliminado (cambiado a inactivo) correctamente'; -- Mensaje de éxito
+                SET @code = 1;  -- Operaciï¿½n exitosa
+                SET @message = 'Estado eliminado (cambiado a inactivo) correctamente'; -- Mensaje de ï¿½xito
             END
             ELSE
             BEGIN
                 SET @code = -1;  -- Fallo
-                SET @message = 'No se pudo cambiar el estado, puede que ya esté inactivo';  -- Mensaje de error
+                SET @message = 'No se pudo cambiar el estado, puede que ya estï¿½ inactivo';  -- Mensaje de error
             END
         END
         ELSE
         BEGIN
             SET @code = -1;
-            SET @message = 'Estado no encontrado o ya está inactivo';
+            SET @message = 'Estado no encontrado o ya estï¿½ inactivo';
         END
 
-        -- Retornar código y mensaje
+        -- Retornar cï¿½digo y mensaje
         SELECT @code AS code, @message AS message;
 
     END TRY
@@ -457,7 +457,7 @@ BEGIN
         -- Manejo de errores
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje de error
     END CATCH;
 END;
 GO
@@ -479,7 +479,7 @@ BEGIN
 
     --Manejo de error si no se encuentra
     IF @@ROWCOUNT = 0
-        RAISERROR ('No se encontró el estado con el ID proporcionado', 16, 1);
+        RAISERROR ('No se encontrï¿½ el estado con el ID proporcionado', 16, 1);
 END;
 GO
 
@@ -505,7 +505,7 @@ GO
 
 CREATE PROCEDURE InsertarProducto
     @data NVARCHAR(MAX),
-	@code INT OUTPUT, -- 1 para éxito, -0 para fallo
+	@code INT OUTPUT, -- 1 para ï¿½xito, -0 para fallo
 	@message NVARCHAR(MAX) OUTPUT -- Mensaje descriptivo
 AS
 BEGIN
@@ -527,7 +527,7 @@ BEGIN
 			id_usuario INT
 		);
 
-		-- Inserción y captura de las filas
+		-- Inserciï¿½n y captura de las filas
 		INSERT INTO Productos (
 			nombre, marca, codigo, stock, precio, 
 			fecha_creacion, foto, id_categoria_producto, 
@@ -561,16 +561,16 @@ BEGIN
 		-- Comprobar si se insertaron filas
 		IF EXISTS (SELECT 1 FROM @result)
 		BEGIN
-			SET @code = 1;  -- Operación exitosa
+			SET @code = 1;  -- Operaciï¿½n exitosa
             SET @message = 'Producto(s) insertado(s) correctamente.';
-            -- Retornar lo insertado junto con el código y mensaje
+            -- Retornar lo insertado junto con el cï¿½digo y mensaje
             SELECT @code AS code, @message AS message, * FROM @result;
 		END
 		ELSE
 		BEGIN
 			SET @code = 0;  -- No se insertaron filas
             SET @message = 'No se insertaron usuarios, verifica los datos proporcionados.';
-            -- Retornar solo código y mensaje
+            -- Retornar solo cï¿½digo y mensaje
             SELECT @code AS code, @message AS message;
 		END
 
@@ -594,7 +594,7 @@ GO
 
 CREATE PROCEDURE ActualizarProducto
 	@data NVARCHAR(MAX),  -- JSON que contiene los datos
-    @code INT OUTPUT,     -- 1 para éxito, 0 para fallo
+    @code INT OUTPUT,     -- 1 para ï¿½xito, 0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -642,12 +642,12 @@ BEGIN
         BEGIN
             SET @code = -1;  -- Usuario no encontrado
             SET @message = 'El producto con el ID proporcionado no existe.';
-            -- Retornar código y mensaje de error
+            -- Retornar cï¿½digo y mensaje de error
             SELECT @code AS code, @message AS message;
             RETURN;
         END;
 
-        -- Actualización de los datos del usuario
+        -- Actualizaciï¿½n de los datos del usuario
         UPDATE U
         SET 
             U.nombre = COALESCE(D.nombre, U.nombre),
@@ -664,10 +664,10 @@ BEGIN
         FROM Productos U
         INNER JOIN @productoData D ON U.id_usuario = D.id_producto;
 
-		-- Verificar si se realizó la actualización 
+		-- Verificar si se realizï¿½ la actualizaciï¿½n 
         IF @@ROWCOUNT > 0
         BEGIN
-            SET @code = 1;  -- Operación exitosa
+            SET @code = 1;  -- Operaciï¿½n exitosa
             SET @message = 'Usuario actualizado correctamente.';
             -- Retornar el producto actualizado
             SELECT @code AS code, @message AS message, 
@@ -679,9 +679,9 @@ BEGIN
         END
         ELSE
         BEGIN
-            SET @code = 0;  -- No se actualizó ninguna fila
+            SET @code = 0;  -- No se actualizï¿½ ninguna fila
             SET @message = 'No se pudo actualizar el usuario, verifique los datos.';
-            -- Retornar código y mensaje
+            -- Retornar cï¿½digo y mensaje
             SELECT @code AS code, @message AS message;
         END;
    END TRY
@@ -689,9 +689,9 @@ BEGIN
 		 -- Captura el error
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        -- Retornar código y mensaje de error
+        -- Retornar cï¿½digo y mensaje de error
         SELECT @code AS code, @message AS message;
-        THROW;  -- Lanza la excepción para que el cliente la vea
+        THROW;  -- Lanza la excepciï¿½n para que el cliente la vea
    END CATCH
 END;
 GO
@@ -703,7 +703,7 @@ GO
 
 CREATE PROCEDURE EliminarProducto
     @id_producto INT,        -- ID del estado a eliminar (cambiar estado)
-    @code INT OUTPUT,      -- 1 para éxito, -1 para fallo
+    @code INT OUTPUT,      -- 1 para ï¿½xito, -1 para fallo
     @message NVARCHAR(MAX) OUTPUT -- Mensaje descriptivo
 AS
 BEGIN
@@ -719,29 +719,29 @@ BEGIN
             -- Validar que el cambio fue exitoso
             IF @@ROWCOUNT > 0
             BEGIN
-                SET @code = 1;  -- Operación exitosa
-                SET @message = 'Estado eliminado (cambiado a inactivo) correctamente'; -- Mensaje de éxito
+                SET @code = 1;  -- Operaciï¿½n exitosa
+                SET @message = 'Estado eliminado (cambiado a inactivo) correctamente'; -- Mensaje de ï¿½xito
             END
             ELSE
             BEGIN
                 SET @code = -1;  -- Fallo
-                SET @message = 'No se pudo cambiar el estado, puede que ya esté inactivo';  -- Mensaje de error
+                SET @message = 'No se pudo cambiar el estado, puede que ya estï¿½ inactivo';  -- Mensaje de error
             END
         END
         ELSE
         BEGIN
             SET @code = -1;
-            SET @message = 'Estado no encontrado o ya está inactivo';
+            SET @message = 'Estado no encontrado o ya estï¿½ inactivo';
         END
 
-        -- Retornar código y mensaje
+        -- Retornar cï¿½digo y mensaje
         SELECT @code AS code, @message AS message;
 	END TRY
 	BEGIN CATCH
 		 -- Manejo de errores
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje de error
 	END CATCH
 END;
 GO
@@ -764,7 +764,7 @@ BEGIN
 
     -- Opcional: Manejo de error si no se encuentra
     IF @@ROWCOUNT = 0
-        RAISERROR ('No se encontró el producto con el ID proporcionado', 16, 1);
+        RAISERROR ('No se encontrï¿½ el producto con el ID proporcionado', 16, 1);
 END;
 GO
 
@@ -817,7 +817,7 @@ GO
 
 CREATE PROCEDURE InsertarUsuario
     @data NVARCHAR(MAX),    -- Datos en formato JSON
-    @code INT OUTPUT,       -- 1 para éxito, 0 para fallo
+    @code INT OUTPUT,       -- 1 para ï¿½xito, 0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -840,7 +840,7 @@ BEGIN
             activo BIT
         );
 
-        -- Inserción y captura de las filas
+        -- Inserciï¿½n y captura de las filas
         INSERT INTO Usuarios (
             password, correo, nombre_completo, telefono, 
             fecha_nacimiento, fecha_creacion, razon_social, 
@@ -875,16 +875,16 @@ BEGIN
         -- Comprobar si se insertaron filas
         IF EXISTS (SELECT 1 FROM @result)
         BEGIN
-            SET @code = 1;  -- Operación exitosa
+            SET @code = 1;  -- Operaciï¿½n exitosa
             SET @message = 'Usuario(s) insertado(s) correctamente.';
-            -- Retornar lo insertado junto con el código y mensaje
+            -- Retornar lo insertado junto con el cï¿½digo y mensaje
             SELECT @code AS code, @message AS message, * FROM @result;
         END
         ELSE
         BEGIN
             SET @code = 0;  -- No se insertaron filas
             SET @message = 'No se insertaron usuarios, verifica los datos proporcionados.';
-            -- Retornar solo código y mensaje
+            -- Retornar solo cï¿½digo y mensaje
             SELECT @code AS code, @message AS message;
         END
     END TRY
@@ -907,7 +907,7 @@ GO
 
 CREATE PROCEDURE ActualizarUsuario
     @data NVARCHAR(MAX),  -- JSON que contiene los datos
-    @code INT OUTPUT,     -- 1 para éxito, 0 para fallo
+    @code INT OUTPUT,     -- 1 para ï¿½xito, 0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -955,12 +955,12 @@ BEGIN
         BEGIN
             SET @code = -1;  -- Usuario no encontrado
             SET @message = 'El usuario con el ID proporcionado no existe.';
-            -- Retornar código y mensaje de error
+            -- Retornar cï¿½digo y mensaje de error
             SELECT @code AS code, @message AS message;
             RETURN;
         END;
 
-        -- Actualización de los datos del usuario
+        -- Actualizaciï¿½n de los datos del usuario
         UPDATE U
         SET 
 		    U.password = COALESCE(D.password, U.password),
@@ -977,10 +977,10 @@ BEGIN
         FROM Usuarios U
         INNER JOIN @usuarioData D ON U.id_usuario = D.id_usuario;
 
-        -- Verificar si se realizó la actualización 
+        -- Verificar si se realizï¿½ la actualizaciï¿½n 
         IF @@ROWCOUNT > 0
         BEGIN
-            SET @code = 1;  -- Operación exitosa
+            SET @code = 1;  -- Operaciï¿½n exitosa
             SET @message = 'Usuario actualizado correctamente.';
             -- Retornar el usuario actualizado
             SELECT @code AS code, @message AS message, 
@@ -992,9 +992,9 @@ BEGIN
         END
         ELSE
         BEGIN
-            SET @code = 0;  -- No se actualizó ninguna fila
+            SET @code = 0;  -- No se actualizï¿½ ninguna fila
             SET @message = 'No se pudo actualizar el usuario, verifique los datos.';
-            -- Retornar código y mensaje
+            -- Retornar cï¿½digo y mensaje
             SELECT @code AS code, @message AS message;
         END;
     END TRY
@@ -1002,9 +1002,9 @@ BEGIN
         -- Captura el error
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        -- Retornar código y mensaje de error
+        -- Retornar cï¿½digo y mensaje de error
         SELECT @code AS code, @message AS message;
-        THROW;  -- Lanza la excepción para que el cliente la vea
+        THROW;  -- Lanza la excepciï¿½n para que el cliente la vea
     END CATCH;
 END;
 GO
@@ -1018,7 +1018,7 @@ GO
 
 CREATE PROCEDURE EliminarUsuario
     @id_usuario INT,        -- ID del estado a eliminar (cambiar estado)
-    @code INT OUTPUT,      -- 1 para éxito, -1 para fallo
+    @code INT OUTPUT,      -- 1 para ï¿½xito, -1 para fallo
     @message NVARCHAR(MAX) OUTPUT -- Mensaje descriptivo
 AS
 BEGIN
@@ -1036,22 +1036,22 @@ BEGIN
             -- Validar que el cambio fue exitoso
             IF @@ROWCOUNT > 0
             BEGIN
-                SET @code = 1;  -- Operación exitosa
-                SET @message = 'Estado eliminado (cambiado a inactivo) correctamente'; -- Mensaje de éxito
+                SET @code = 1;  -- Operaciï¿½n exitosa
+                SET @message = 'Estado eliminado (cambiado a inactivo) correctamente'; -- Mensaje de ï¿½xito
             END
             ELSE
             BEGIN
                 SET @code = -1;  -- Fallo
-                SET @message = 'No se pudo cambiar el estado, puede que ya esté inactivo';  -- Mensaje de error
+                SET @message = 'No se pudo cambiar el estado, puede que ya estï¿½ inactivo';  -- Mensaje de error
             END
         END
         ELSE
         BEGIN
             SET @code = -1;
-            SET @message = 'Estado no encontrado o ya está inactivo';
+            SET @message = 'Estado no encontrado o ya estï¿½ inactivo';
         END
 
-        -- Retornar código y mensaje
+        -- Retornar cï¿½digo y mensaje
         SELECT @code AS code, @message AS message;
 
     END TRY
@@ -1059,7 +1059,7 @@ BEGIN
         -- Manejo de errores
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje de error
     END CATCH;
 END;
 GO
@@ -1081,7 +1081,7 @@ BEGIN
 
     -- Opcional: Manejo de error si no se encuentra
     IF @@ROWCOUNT = 0
-        RAISERROR ('No se encontró el usuario con el ID proporcionado', 16, 1);
+        RAISERROR ('No se encontrï¿½ el usuario con el ID proporcionado', 16, 1);
 END;
 GO
 
@@ -1108,7 +1108,7 @@ GO
 
 CREATE PROCEDURE InsertarRol
     @data NVARCHAR(MAX),
-    @code INT OUTPUT,       -- 1 para éxito, -0 para fallo
+    @code INT OUTPUT,       -- 1 para ï¿½xito, -0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -1121,7 +1121,7 @@ BEGIN
             nombre VARCHAR(50)
         );
 
-        -- Inserción y captura de las filas
+        -- Inserciï¿½n y captura de las filas
         INSERT INTO Rol (nombre)
         OUTPUT INSERTED.id_rol, INSERTED.nombre INTO @result
         SELECT nombre
@@ -1132,26 +1132,26 @@ BEGIN
         -- Comprobar si se insertaron filas
         IF EXISTS (SELECT 1 FROM @result)
         BEGIN
-            SET @code = 1;  -- Operación exitosa
-            SET @message = 'Estado insertado correctamente'; -- Mensaje de éxito
-            -- Retornar lo insertado junto con el código y mensaje
+            SET @code = 1;  -- Operaciï¿½n exitosa
+            SET @message = 'Estado insertado correctamente'; -- Mensaje de ï¿½xito
+            -- Retornar lo insertado junto con el cï¿½digo y mensaje
             SELECT @code AS code, @message AS message, * FROM @result;  -- Incluir code y message en el resultado
         END
         ELSE
         BEGIN
             SET @code = -0;  -- No se insertaron filas
-            SET @message = 'No se insertaron Rol, asegúrate de que los datos sean válidos';  -- Mensaje de error
-            -- Incluir code y message también en este caso
-            SELECT @code AS code, @message AS message;  -- Retornar código y mensaje en caso de error
+            SET @message = 'No se insertaron Rol, asegï¿½rate de que los datos sean vï¿½lidos';  -- Mensaje de error
+            -- Incluir code y message tambiï¿½n en este caso
+            SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje en caso de error
         END
     END TRY
     BEGIN CATCH
         -- Captura el error
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        -- Retornar código y mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
-        THROW;  -- Lanza la excepción para que el cliente la vea
+        -- Retornar cï¿½digo y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje de error
+        THROW;  -- Lanza la excepciï¿½n para que el cliente la vea
     END CATCH;
 END;
 GO
@@ -1164,7 +1164,7 @@ GO
 
 CREATE PROCEDURE ActualizarRol
     @data NVARCHAR(MAX),  -- JSON que contiene los datos
-    @code INT OUTPUT,      -- 1 para éxito, -0 para fallo
+    @code INT OUTPUT,      -- 1 para ï¿½xito, -0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -1191,21 +1191,21 @@ BEGIN
         BEGIN
             SET @code = -1;  -- Estado no encontrado
             SET @message = 'El estado con el ID proporcionado no existe.';
-            -- Retornar código y mensaje de error
+            -- Retornar cï¿½digo y mensaje de error
             SELECT @code AS code, @message AS message;
             RETURN;
         END
 
-        -- Actualización del nombre
+        -- Actualizaciï¿½n del nombre
         UPDATE E
         SET E.nombre = D.nombre
         FROM Rol E
         INNER JOIN @estadoData D ON E.id_rol = D.id_rol;
 
-        -- Verificar si se realizó la actualización 
+        -- Verificar si se realizï¿½ la actualizaciï¿½n 
         IF @@ROWCOUNT > 0
         BEGIN
-            SET @code = 1;  -- Operación exitosa
+            SET @code = 1;  -- Operaciï¿½n exitosa
             SET @message = 'Estado actualizado correctamente.';
             -- Retornar el estado actualizado
             SELECT @code AS code, @message AS message, E.id_rol, E.nombre
@@ -1214,9 +1214,9 @@ BEGIN
         END
         ELSE
         BEGIN
-            SET @code = -0;  -- No se actualizó ninguna fila
+            SET @code = -0;  -- No se actualizï¿½ ninguna fila
             SET @message = 'No se pudo actualizar el estado, verifique los datos.';
-            -- Retornar código y mensaje
+            -- Retornar cï¿½digo y mensaje
             SELECT @code AS code, @message AS message;
         END
     END TRY
@@ -1224,9 +1224,9 @@ BEGIN
         -- Captura el error
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        -- Retornar código y mensaje de error
+        -- Retornar cï¿½digo y mensaje de error
         SELECT @code AS code, @message AS message;
-        THROW;  -- Lanza la excepción para que el cliente la vea
+        THROW;  -- Lanza la excepciï¿½n para que el cliente la vea
     END CATCH;
 END;
 GO
@@ -1238,7 +1238,7 @@ GO
 
 CREATE PROCEDURE EliminarRol
     @id_rol INT,        -- ID del estado a eliminar (cambiar estado)
-    @code INT OUTPUT,      -- 1 para éxito, -1 para fallo
+    @code INT OUTPUT,      -- 1 para ï¿½xito, -1 para fallo
     @message NVARCHAR(MAX) OUTPUT -- Mensaje descriptivo
 AS
 BEGIN
@@ -1256,22 +1256,22 @@ BEGIN
             -- Validar que el cambio fue exitoso
             IF @@ROWCOUNT > 0
             BEGIN
-                SET @code = 1;  -- Operación exitosa
-                SET @message = 'Estado eliminado (cambiado a inactivo) correctamente'; -- Mensaje de éxito
+                SET @code = 1;  -- Operaciï¿½n exitosa
+                SET @message = 'Estado eliminado (cambiado a inactivo) correctamente'; -- Mensaje de ï¿½xito
             END
             ELSE
             BEGIN
                 SET @code = -1;  -- Fallo
-                SET @message = 'No se pudo cambiar el estado, puede que ya esté inactivo';  -- Mensaje de error
+                SET @message = 'No se pudo cambiar el estado, puede que ya estï¿½ inactivo';  -- Mensaje de error
             END
         END
         ELSE
         BEGIN
             SET @code = -1;
-            SET @message = 'Estado no encontrado o ya está inactivo';
+            SET @message = 'Estado no encontrado o ya estï¿½ inactivo';
         END
 
-        -- Retornar código y mensaje
+        -- Retornar cï¿½digo y mensaje
         SELECT @code AS code, @message AS message;
 
     END TRY
@@ -1279,7 +1279,7 @@ BEGIN
         -- Manejo de errores
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje de error
     END CATCH;
 END;
 GO
@@ -1299,7 +1299,7 @@ BEGIN
 
     --Manejo de error si no se encuentra
     IF @@ROWCOUNT = 0
-        RAISERROR ('No se encontró el estado con el ID proporcionado', 16, 1);
+        RAISERROR ('No se encontrï¿½ el estado con el ID proporcionado', 16, 1);
 END;
 GO
 
@@ -1324,7 +1324,7 @@ GO
 
 CREATE PROCEDURE InsertarCategoriaProducto
     @data NVARCHAR(MAX),
-    @code INT OUTPUT,       -- 1 para éxito, -0 para fallo
+    @code INT OUTPUT,       -- 1 para ï¿½xito, -0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -1341,7 +1341,7 @@ BEGIN
 			id_usuario INT
         );
 
-        -- Inserción y captura de las filas
+        -- Inserciï¿½n y captura de las filas
         INSERT INTO CategoriasProductos (nombre_categoria, fecha_creacion, id_estado, activo, id_usuario)
         OUTPUT INSERTED.id_categoria_producto, INSERTED.nombre_categoria,  INSERTED.fecha_creacion, INSERTED.id_estado, INSERTED.activo, INSERTED.id_usuario INTO @result
         SELECT nombre_categoria, GETDATE(), id_estado, 1, id_usuario
@@ -1358,26 +1358,26 @@ BEGIN
         -- Comprobar si se insertaron filas
         IF EXISTS (SELECT 1 FROM @result)
         BEGIN
-            SET @code = 1;  -- Operación exitosa
-            SET @message = 'Estado insertado correctamente'; -- Mensaje de éxito
-            -- Retornar lo insertado junto con el código y mensaje
+            SET @code = 1;  -- Operaciï¿½n exitosa
+            SET @message = 'Estado insertado correctamente'; -- Mensaje de ï¿½xito
+            -- Retornar lo insertado junto con el cï¿½digo y mensaje
             SELECT @code AS code, @message AS message, * FROM @result;  -- Incluir code y message en el resultado
         END
         ELSE
         BEGIN
             SET @code = -0;  -- No se insertaron filas
-            SET @message = 'No se insertaron estados, asegúrate de que los datos sean válidos';  -- Mensaje de error
-            -- Incluir code y message también en este caso
-            SELECT @code AS code, @message AS message;  -- Retornar código y mensaje en caso de error
+            SET @message = 'No se insertaron estados, asegï¿½rate de que los datos sean vï¿½lidos';  -- Mensaje de error
+            -- Incluir code y message tambiï¿½n en este caso
+            SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje en caso de error
         END
     END TRY
     BEGIN CATCH
         -- Captura el error
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        -- Retornar código y mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
-        THROW;  -- Lanza la excepción para que el cliente la vea
+        -- Retornar cï¿½digo y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje de error
+        THROW;  -- Lanza la excepciï¿½n para que el cliente la vea
     END CATCH;
 END;
 GO
@@ -1390,7 +1390,7 @@ GO
 
 CREATE PROCEDURE ActualizarCategoriaProducto
     @data NVARCHAR(MAX),  -- JSON que contiene los datos
-    @code INT OUTPUT,      -- 1 para éxito, -0 para fallo
+    @code INT OUTPUT,      -- 1 para ï¿½xito, -0 para fallo
     @message NVARCHAR(MAX) OUTPUT  -- Mensaje descriptivo
 AS
 BEGIN
@@ -1425,13 +1425,13 @@ BEGIN
         BEGIN
             SET @code = -1;  -- Estado no encontrado
             SET @message = 'El estado con el ID proporcionado no existe.';
-            -- Retornar código y mensaje de error
+            -- Retornar cï¿½digo y mensaje de error
             SELECT @code AS code, @message AS message;
             RETURN;
         END
 
 
-        -- Actualización de la categoria de producto
+        -- Actualizaciï¿½n de la categoria de producto
         UPDATE E
         SET E.nombre_categoria = D.nombre_categoria, 
 			E.id_estado = D.id_estado, 
@@ -1440,10 +1440,10 @@ BEGIN
         FROM CategoriasProductos E
         INNER JOIN @estadoData D ON E.id_categoria_producto = D.id_categoria_producto;
 
-        -- Verificar si se realizó la actualización 
+        -- Verificar si se realizï¿½ la actualizaciï¿½n 
         IF @@ROWCOUNT > 0
         BEGIN
-            SET @code = 1;  -- Operación exitosa
+            SET @code = 1;  -- Operaciï¿½n exitosa
             SET @message = 'Estado actualizado correctamente.';
             -- Retornar el estado actualizado
             SELECT @code AS code, @message AS message, E.id_categoria_producto, E.nombre_categoria
@@ -1452,9 +1452,9 @@ BEGIN
         END
         ELSE
         BEGIN
-            SET @code = -0;  -- No se actualizó ninguna fila
+            SET @code = -0;  -- No se actualizï¿½ ninguna fila
             SET @message = 'No se pudo actualizar el estado, verifique los datos.';
-            -- Retornar código y mensaje
+            -- Retornar cï¿½digo y mensaje
             SELECT @code AS code, @message AS message;
         END
     END TRY
@@ -1462,9 +1462,9 @@ BEGIN
         -- Captura el error
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        -- Retornar código y mensaje de error
+        -- Retornar cï¿½digo y mensaje de error
         SELECT @code AS code, @message AS message;
-        THROW;  -- Lanza la excepción para que el cliente la vea
+        THROW;  -- Lanza la excepciï¿½n para que el cliente la vea
     END CATCH;
 END;
 GO
@@ -1476,7 +1476,7 @@ GO
 
 CREATE PROCEDURE EliminarCategoriaProducto
     @id_categoria_producto INT,        -- ID del estado a eliminar (cambiar estado)
-    @code INT OUTPUT,      -- 1 para éxito, -1 para fallo
+    @code INT OUTPUT,      -- 1 para ï¿½xito, -1 para fallo
     @message NVARCHAR(MAX) OUTPUT -- Mensaje descriptivo
 AS
 BEGIN
@@ -1494,22 +1494,22 @@ BEGIN
             -- Validar que el cambio fue exitoso
             IF @@ROWCOUNT > 0
             BEGIN
-                SET @code = 1;  -- Operación exitosa
-                SET @message = 'Categoria de producto eliminado (cambiado a inactivo) correctamente'; -- Mensaje de éxito
+                SET @code = 1;  -- Operaciï¿½n exitosa
+                SET @message = 'Categoria de producto eliminado (cambiado a inactivo) correctamente'; -- Mensaje de ï¿½xito
             END
             ELSE
             BEGIN
                 SET @code = -1;  -- Fallo
-                SET @message = 'No se pudo cambiar el estado, puede que ya esté inactivo';  -- Mensaje de error
+                SET @message = 'No se pudo cambiar el estado, puede que ya estï¿½ inactivo';  -- Mensaje de error
             END
         END
         ELSE
         BEGIN
             SET @code = -1;
-            SET @message = 'Estado no encontrado o ya está inactivo';
+            SET @message = 'Estado no encontrado o ya estï¿½ inactivo';
         END
 
-        -- Retornar código y mensaje
+        -- Retornar cï¿½digo y mensaje
         SELECT @code AS code, @message AS message;
 
     END TRY
@@ -1517,7 +1517,7 @@ BEGIN
         -- Manejo de errores
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar cï¿½digo y mensaje de error
     END CATCH;
 END;
 GO
@@ -1568,12 +1568,12 @@ GO
 ---------------------PROCEDIMIENTOS ALMACENADOS PARA ORDEN y DETALLE DE ORDEN-------------------
 --Insertar
 IF OBJECT_ID('InsertarOrden', 'P') IS NOT NULL
-	DROP PROCEDURE InsertarOrden
+    DROP PROCEDURE InsertarOrden
 GO
 
 CREATE PROCEDURE InsertarOrden
     @data NVARCHAR(MAX),        -- JSON que contiene los datos de la orden
-    @code INT OUTPUT,           -- Código de salida (0 para éxito, -1 para error)
+    @code INT OUTPUT,           -- CÃ³digo de salida (0 para Ã©xito, -1 para error)
     @message NVARCHAR(MAX) OUTPUT -- Mensaje de salida
 AS
 BEGIN
@@ -1593,7 +1593,7 @@ BEGIN
             CAST(JSON_VALUE(@data, '$.id_cliente') AS INT),      -- id_cliente
             CAST(JSON_VALUE(@data, '$.id_operador') AS INT),     -- id_operador
             1,                                                   -- activo
-            0,                                                   -- total_orden (se actualizará más adelante)
+            0,                                                   -- total_orden (se actualizarÃ¡ mÃ¡s adelante)
             1                                                    -- id_estado
         );
 
@@ -1612,6 +1612,45 @@ BEGIN
         FROM OPENJSON(@data, '$.detalles') AS detalle
         INNER JOIN Productos p ON p.id_producto = CAST(JSON_VALUE(detalle.value, '$.id_producto') AS INT);
 
+        -- Actualizar el stock por cada producto en los detalles
+        DECLARE @productId INT, @quantity INT;
+        DECLARE details_cursor CURSOR FOR
+        SELECT 
+            CAST(JSON_VALUE(detalle.value, '$.id_producto') AS INT) AS id_producto,
+            CAST(JSON_VALUE(detalle.value, '$.cantidad') AS INT) AS cantidad
+        FROM OPENJSON(@data, '$.detalles') AS detalle;
+
+        OPEN details_cursor;
+        FETCH NEXT FROM details_cursor INTO @productId, @quantity;
+
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            UPDATE Productos
+            SET stock = stock - @quantity
+            WHERE id_producto = @productId;
+
+            -- Verificar si hay stock insuficiente
+            IF EXISTS (
+                SELECT 1
+                FROM Productos
+                WHERE id_producto = @productId AND stock < 0
+            )
+            BEGIN
+                CLOSE details_cursor;
+                DEALLOCATE details_cursor;
+                ROLLBACK TRANSACTION;
+
+                SET @code = 50000;
+                SET @message = 'Stock insuficiente para uno o mÃ¡s productos.';
+                RETURN;
+            END;
+
+            FETCH NEXT FROM details_cursor INTO @productId, @quantity;
+        END;
+
+        CLOSE details_cursor;
+        DEALLOCATE details_cursor;
+
         -- Calcular el total de la orden
         SELECT @total = ISNULL(SUM(sub_total), 0)
         FROM OrdenDetalles
@@ -1622,10 +1661,10 @@ BEGIN
         SET total_orden = @total
         WHERE id_orden = @id_orden;
 
-        -- Confirmar la transacción
+        -- Confirmar la transacciÃ³n
         COMMIT TRANSACTION;
 
-        -- Parámetros de salida
+        -- ParÃ¡metros de salida
         SET @code = 0;
         SET @message = 'Orden y detalles insertados exitosamente.';
     END TRY
@@ -1641,6 +1680,8 @@ END;
 GO
 
 
+
+
 --Actualizar
 IF OBJECT_ID('ActualizarOrden', 'P') IS NOT NULL
 	DROP PROCEDURE ActualizarOrden
@@ -1648,7 +1689,7 @@ GO
 
 CREATE PROCEDURE ActualizarOrden
     @data NVARCHAR(MAX),         -- JSON con los datos de la orden
-    @code INT OUTPUT,            -- Código de salida (0 para éxito, -1 para error)
+    @code INT OUTPUT,            -- Cï¿½digo de salida (0 para ï¿½xito, -1 para error)
     @message NVARCHAR(MAX) OUTPUT -- Mensaje de salida
 AS
 BEGIN
@@ -1678,9 +1719,9 @@ BEGIN
 				activo = 0
 			WHERE id_orden = @id_orden
 
-            -- Respuesta de éxito al cancelar
+            -- Respuesta de ï¿½xito al cancelar
             SET @code = 0;
-            SET @message = 'Orden cancelada con éxito.';
+            SET @message = 'Orden cancelada con ï¿½xito.';
         END
         ELSE
         BEGIN
@@ -1690,9 +1731,9 @@ BEGIN
                 id_estado = @nuevo_estado  -- Cambia el estado de la orden
             WHERE id_orden = @id_orden;
 
-            -- Respuesta de éxito al cambiar el estado
+            -- Respuesta de ï¿½xito al cambiar el estado
             SET @code = 0;
-            SET @message = 'Estado de la orden actualizado con éxito.';
+            SET @message = 'Estado de la orden actualizado con ï¿½xito.';
         END
     END TRY
     BEGIN CATCH
@@ -1710,7 +1751,7 @@ GO
 
 CREATE PROCEDURE ActualizarOrdenEncabezado
 	@data NVARCHAR(MAX),          -- JSON con los datos de la orden
-    @code INT OUTPUT,             -- Código de salida (0 para éxito, -1 para error)
+    @code INT OUTPUT,             -- Cï¿½digo de salida (0 para ï¿½xito, -1 para error)
     @message NVARCHAR(MAX) OUTPUT -- Mensaje de salida
 AS
 BEGIN
@@ -1737,7 +1778,7 @@ BEGIN
             @id_operador = JSON_VALUE(@data, '$.id_operador'),
             @id_cliente = JSON_VALUE(@data, '$.id_cliente');
 
-        -- Validar que @id_orden esté presente en el JSON
+        -- Validar que @id_orden estï¿½ presente en el JSON
         IF @id_orden IS NULL
         BEGIN
             SET @code = -1;
@@ -1764,9 +1805,9 @@ BEGIN
             id_cliente = COALESCE(@id_cliente, id_cliente)
         WHERE id_orden = @id_orden;
 
-        -- Establecer código y mensaje de éxito
+        -- Establecer cï¿½digo y mensaje de ï¿½xito
         SET @code = 0;
-        SET @message = 'La orden se actualizó correctamente.';
+        SET @message = 'La orden se actualizï¿½ correctamente.';
     END TRY
     BEGIN CATCH
         -- Manejar errores
@@ -1808,12 +1849,41 @@ CREATE PROCEDURE ListarOrdenes
 AS
 BEGIN
     SELECT 
-        *
-    FROM 
-        Orden
-	INNER JOIN OrdenDetalles 
-	ON
-	OrdenDetalles.id_orden = Orden.id_orden;
+    Orden.id_orden AS orden_id,
+    Orden.fecha_creacion AS fecha_creacion,
+    Orden.fecha_entrega AS fecha_entrega,
+    Orden.total_orden AS total_orden,
+    Orden.activo AS activo,
+    Orden.id_estado AS id_estado,
+    Orden.id_operador AS id_operador,
+    Orden.id_cliente AS id_cliente,
+    STRING_AGG(
+        JSON_QUERY(
+            CONCAT(
+                '{"id_detalle": ', OrdenDetalles.id_orden_detalle,
+                ',"producto": ', OrdenDetalles.id_producto,
+                ',"cantidad": ', OrdenDetalles.cantidad,
+                ',"precio": ', OrdenDetalles.precio,
+                ',"subtotal": ', OrdenDetalles.sub_total,
+                ',"activo": ', OrdenDetalles.activo,
+                ' }'
+            )
+        ), 
+        ', '
+    ) AS productos_detalle
+FROM 
+    Orden
+INNER JOIN OrdenDetalles 
+    ON OrdenDetalles.id_orden = Orden.id_orden
+GROUP BY 
+    Orden.id_orden, 
+    Orden.fecha_creacion, 
+    Orden.fecha_entrega, 
+    Orden.total_orden, 
+    Orden.activo,
+    Orden.id_estado,
+    Orden.id_operador,
+    Orden.id_cliente;
 END;
 GO
 
