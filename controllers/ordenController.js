@@ -58,7 +58,7 @@ exports.updateOrden = async (req, res) => {
 
     //UN OPERADOR PUEDE MODIFICAR A OTROS ESTADOS COMO EN PAUSA O AUTORIZADA O ENTREGADA O RECHAZADA
     if (rolJwt === 1) {
-      const allowedFields = ["id_orden", "nuevo_estado", "cancelar"];
+      const allowedFields = ["id_orden", "nuevo_estado", "cancelar", "id_operador"];
       const updateFields = Object.keys(userData);
     
       // Filtrar solo los campos que no están permitidos
@@ -211,9 +211,12 @@ exports.getOrdenById = async (req, res) => {
 
 exports.getAllOrdenes = async (req, res) => {
   const { id: idJwt, id_rol: rolJwt } = req.user; // Extraer ID y rol del usuario autenticado
+  const page = parseInt(req.query.page) || 1; // Página solicitada, por defecto 1
+  const limit = parseInt(req.query.limit) || 10; // Límite de registros por página, por defecto 10
 
-  console.log("ID del usuario autenticado:", idJwt);
-  console.log("Rol del usuario:", rolJwt);
+  if (page <= 0 || limit <= 0) {
+    return res.status(400).json({ message: "Los parámetros 'page' y 'limit' deben ser mayores a 0." });
+  }
 
   try {
     const ordenes = await getOrdenes();
@@ -226,7 +229,6 @@ exports.getAllOrdenes = async (req, res) => {
 
     // Filtrar órdenes según el rol
     let filteredOrdenes;
-
     if (rolJwt === 2) {
       // Clientes solo pueden ver órdenes asociadas a su ID
       filteredOrdenes = ordenes.filter(orden => orden.id_cliente === parseInt(idJwt));
@@ -238,7 +240,18 @@ exports.getAllOrdenes = async (req, res) => {
       return res.status(403).json({ message: "No tienes permisos para ver las órdenes." });
     }
 
-    res.status(200).json(filteredOrdenes);
+    // Calcular índices de paginación
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    const paginatedOrdenes = filteredOrdenes.slice(startIndex, endIndex);
+
+    res.status(200).json({
+      currentPage: page,
+      totalPages: Math.ceil(filteredOrdenes.length / limit),
+      totalRecords: filteredOrdenes.length,
+      data: paginatedOrdenes,
+    });
   } catch (error) {
     console.error("Error al obtener las órdenes:", error);
     res.status(500).json({ error: "Error al obtener las órdenes." });

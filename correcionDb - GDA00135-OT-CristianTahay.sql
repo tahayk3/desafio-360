@@ -1697,11 +1697,13 @@ BEGIN
         DECLARE @id_orden INT;
         DECLARE @nuevo_estado INT;
         DECLARE @cancelar BIT;
+		DECLARE @id_operador INT;
         
         -- Parseamos el JSON recibido
         SET @id_orden = JSON_VALUE(@data, '$.id_orden');
         SET @nuevo_estado = JSON_VALUE(@data, '$.nuevo_estado');
         SET @cancelar = JSON_VALUE(@data, '$.cancelar');
+		SET @id_operador = JSON_VALUE(@data, '$.id_operador');
         
         -- Si cancelar = 1, la orden es cancelada
         IF @cancelar = 1
@@ -1710,7 +1712,7 @@ BEGIN
             UPDATE [Orden]
             SET 
                 activo = 0,                -- Orden inactiva
-                id_estado = 2             -- Estado 'Cancelada'
+                id_estado = 2,          -- Estado 'Cancelada'
             WHERE id_orden = @id_orden;
 
 			-- Se actualiza el detalle de la orden para cancelarlo
@@ -1719,21 +1721,23 @@ BEGIN
 				activo = 0
 			WHERE id_orden = @id_orden
 
+
             -- Respuesta de �xito al cancelar
             SET @code = 0;
-            SET @message = 'Orden cancelada con �xito.';
+            SET @message = 'Orden cancelada con exito.';
         END
         ELSE
         BEGIN
-            -- Si no se cancela, solo se actualiza el estado de la orden
+            -- Si no se cancela, solo se actualiza el estado de la orden, se actualiza  el operador que modifica el estado de la orden
             UPDATE [Orden]
             SET 
-                id_estado = @nuevo_estado  -- Cambia el estado de la orden
+                id_estado = @nuevo_estado,  -- Cambia el estado de la orden
+				id_operador = @id_operador
             WHERE id_orden = @id_orden;
 
-            -- Respuesta de �xito al cambiar el estado
+            -- Respuesta de exito al cambiar el estado
             SET @code = 0;
-            SET @message = 'Estado de la orden actualizado con �xito.';
+            SET @message = 'Estado de la orden actualizado con exito.';
         END
     END TRY
     BEGIN CATCH

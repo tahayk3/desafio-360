@@ -110,10 +110,36 @@ exports.getProductoById = async (req, res) => {
 };
 
 exports.getAllProductos = async (req, res) => {
+  const page = parseInt(req.query.page) || 1; // Página solicitada, por defecto 1
+  const limit = parseInt(req.query.limit) || 10; // Límite de registros por página, por defecto 10
+
+  if (page <= 0 || limit <= 0) {
+    return res.status(400).json({ message: "Los parámetros 'page' y 'limit' deben ser mayores a 0." });
+  }
+
   try {
-    const users = await getProductos();
-    res.json(users);
+    const productos = await getProductos();
+
+    if (!productos || productos.length === 0) {
+      return res.status(404).json({ message: "No hay productos disponibles." });
+    }
+
+    console.log("Productos obtenidos:", productos);
+
+    // Calcular índices de paginación
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    const paginatedProductos = productos.slice(startIndex, endIndex);
+
+    res.status(200).json({
+      currentPage: page,
+      totalPages: Math.ceil(productos.length / limit),
+      totalRecords: productos.length,
+      data: paginatedProductos,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error al obtener los productos:", error);
+    res.status(500).json({ error: "Error al obtener los productos." });
   }
 };

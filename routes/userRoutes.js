@@ -10,7 +10,7 @@ const router = express.Router();
 
 //CRUD
 // Operadores y usuarios
-router.post("/", verifyToken, addUser); 
+router.post("/", addUser); 
 // Operadores(su perfil,  activar o desactivar otros usuarios) o el usuario su mismo 
 router.patch("/:id", verifyToken, updateUser);
 // Solo los operadores pueden desactivar a otros usuarios u operadores 
