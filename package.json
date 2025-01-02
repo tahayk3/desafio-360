@@ -5,6 +5,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "firebase-admin": "^13.0.2",
     "jsonwebtoken": "^9.0.2",
     "sequelize": "^6.37.5",
     "tedious": "^18.6.1"
