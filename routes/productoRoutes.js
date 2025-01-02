@@ -6,7 +6,7 @@ const router = express.Router();
 const { verifyToken } = require("../middlewares/authMiddleware");
 
 router.post('/', verifyToken, addProducto);
-router.patch('/:id', verifyToken, updateProducto);
+router.patch('/', verifyToken, updateProducto);
 router.delete('/:id', verifyToken, deleteProducto);
 router.get('/:id', verifyToken, getProductoById);
 router.get('/', verifyToken, getAllProductos)

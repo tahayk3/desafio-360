@@ -29,6 +29,15 @@ CREATE TABLE [Productos]
 )
 go
 
+
+UPDATE [Productos] 
+SET [foto] = NULL;
+GO
+
+ALTER TABLE [Productos] 
+ALTER COLUMN [foto] Varchar(MAX) NULL;
+GO
+
 -- Create indexes for table Productos
 
 CREATE INDEX [IX_Relationship5] ON [Productos] ([id_categoria_producto])
@@ -520,7 +529,7 @@ BEGIN
 			stock FLOAT,
 			precio FLOAT,
 			fecha_creacion DATETIME,
-			foto VARBINARY (MAX),
+			foto VARCHAR(MAX),
 			id_categoria_producto INT,
 			id_estado INT,
 			activo INT,
@@ -550,7 +559,7 @@ BEGIN
 			stock FLOAT,
 			precio FLOAT,
 			fecha_creacion DATETIME,
-			foto VARBINARY (MAX),
+			foto VARCHAR (MAX),
 			id_categoria_producto INT,
 			id_estado INT,
 			activo INT,
@@ -610,7 +619,7 @@ BEGIN
 			stock FLOAT,
 			precio FLOAT,
 			fecha_creacion DATETIME,
-			foto VARBINARY (MAX),
+			foto VARCHAR (MAX),
 			id_categoria_producto INT,
 			id_estado INT,
 			activo INT,
@@ -630,7 +639,7 @@ BEGIN
 			stock FLOAT,
 			precio FLOAT,
 			fecha_creacion DATETIME,
-			foto VARBINARY (MAX),
+			foto VARCHAR (MAX),
 			id_categoria_producto INT,
 			id_estado INT,
 			activo INT,

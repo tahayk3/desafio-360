@@ -89,5 +89,7 @@ async function getCategoriasProductos() {
     return results;
 }
 
+
+
 module.exports = { createCategoriaProducto, changeCategoriaProducto, desactiveCategoriaProducto, getCategoriaProducto, getCategoriasProductos };
 

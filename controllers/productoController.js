@@ -34,9 +34,7 @@ exports.addProducto = async (req, res) => {
 };
 
 exports.updateProducto = async (req, res) => {
-  const { id } = req.params;
   const userData = req.body;
-  userData.id_producto = id;
 
   console.log(userData);
 
