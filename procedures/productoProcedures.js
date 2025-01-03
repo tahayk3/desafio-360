@@ -75,12 +75,12 @@ async function desactiveProducto(id_producto){
 }
 
 
-async function getProduct(id_usuario) {
+async function getProduct(id_producto) {
     const [results] = await sequelize.query(
-        `EXEC ConsultarUsuarioPorID
-            @id_usuario = :id_usuario
+        `EXEC ConsultarProductoPorID
+            @id_producto = :id_producto
         `,  {
-            replacements: {id_usuario}
+            replacements: {id_producto}
           });
           return results;
     }
