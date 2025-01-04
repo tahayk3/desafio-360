@@ -1575,6 +1575,81 @@ GO
 
 
 ---------------------PROCEDIMIENTOS ALMACENADOS PARA ORDEN y DETALLE DE ORDEN-------------------
+--Cancelar orden
+IF OBJECT_ID('CancelarOrden', 'P') IS NOT NULL
+    DROP PROCEDURE CancelarOrden;
+GO
+
+CREATE PROCEDURE CancelarOrden
+    @id_orden INT,            -- ID de la orden a cancelar
+    @code INT OUTPUT,         -- Código de salida (0 para éxito, -1 para error)
+    @message NVARCHAR(MAX) OUTPUT -- Mensaje de salida
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        -- Verificar la existencia de la orden activa
+        IF NOT EXISTS (
+            SELECT 1
+            FROM Orden
+            WHERE id_orden = @id_orden AND activo = 1
+        )
+        BEGIN
+            SET @code = 404;
+            SET @message = 'La orden no existe o ya ha sido cancelada.';
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END;
+
+        -- Revertir el stock por cada producto en los detalles de la orden
+        DECLARE @productId INT, @quantity INT;
+        DECLARE details_cursor CURSOR FOR
+        SELECT id_producto, cantidad
+        FROM OrdenDetalles
+        WHERE id_orden = @id_orden AND activo = 1;
+
+        OPEN details_cursor;
+        FETCH NEXT FROM details_cursor INTO @productId, @quantity;
+
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            -- Incrementar el stock
+            UPDATE Productos
+            SET stock = stock + @quantity
+            WHERE id_producto = @productId;
+
+            FETCH NEXT FROM details_cursor INTO @productId, @quantity;
+        END;
+
+        CLOSE details_cursor;
+        DEALLOCATE details_cursor;
+
+        -- Cambiar el estado de la orden a "cancelada" (por ejemplo, id_estado = 2)
+        UPDATE Orden
+        SET id_estado = 2, -- Estado cancelado
+            activo = 0
+        WHERE id_orden = @id_orden;
+
+        -- Confirmar la transacción
+        COMMIT TRANSACTION;
+
+        -- Parámetros de salida
+        SET @code = 0;
+        SET @message = 'La orden ha sido cancelada exitosamente y los productos han sido devueltos al stock.';
+    END TRY
+    BEGIN CATCH
+        -- Revertir la transacción en caso de error
+        ROLLBACK TRANSACTION;
+
+        -- Mensaje de error
+        SET @code = ERROR_NUMBER();
+        SET @message = ERROR_MESSAGE();
+    END CATCH
+END;
+GO
+
 --Insertar
 IF OBJECT_ID('InsertarOrden', 'P') IS NOT NULL
     DROP PROCEDURE InsertarOrden
@@ -1603,7 +1678,7 @@ BEGIN
             CAST(JSON_VALUE(@data, '$.id_operador') AS INT),     -- id_operador
             1,                                                   -- activo
             0,                                                   -- total_orden (se actualizará más adelante)
-            1                                                    -- id_estado
+            1                                                   -- id_estado
         );
 
         -- Obtener el ID generado para la orden
