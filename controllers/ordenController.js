@@ -4,6 +4,7 @@ const {
   getOrden,
   getOrdenes,
   changeOrdenEncabezado,
+  cancelarOrden
 } = require("../procedures/ordenProcedures");
 
 exports.addOrden = async (req, res) => {
@@ -83,7 +84,7 @@ exports.updateOrden = async (req, res) => {
     // Reglas para un cliente(cancelar orden), cancelar debe ser 1, entonces aqui es !==1
     //UN CLIENTE PUEDE CANCELAR SU ORDEN Y SOLO LA DE EL
     if (rolJwt === 2) {
-      const allowedFields = ["id_orden", "nuevo_estado", "cancelar", "id_usuario"];
+      const allowedFields = ["id_orden", "nuevo_estado", "cancelar", "id_operador"];
       const updateFields = Object.keys(userData);
     
       // Filtrar solo los campos que no están permitidos
@@ -99,7 +100,7 @@ exports.updateOrden = async (req, res) => {
       }
     
       // Verificar la regla específica para 'cancelar'
-      if ('cancelar' in userData && parseInt(userData.cancelar) === 1 && parseInt(idJwt) === 'id_usuario' in userData && parseInt(userData.id_usuario)) {
+      if ('cancelar' in userData && parseInt(userData.cancelar) === 1) {
         const result = await changeOrden(userData);
         res.status(200).json(result); // Enviamos la respuesta
       }
@@ -257,3 +258,32 @@ exports.getAllOrdenes = async (req, res) => {
     res.status(500).json({ error: "Error al obtener las órdenes." });
   }
 };
+
+//Cancelar orden 
+exports.updateCancelarOrden = async (req, res) => {
+  const { id } = req.params; // Obtenemos el ID de la orden
+
+  try {
+    const idJwt = req.user.id; // ID del usuario autenticado (JWT)
+    const rolJwt = req.user.id_rol; // Rol del usuario autenticado (JWT)
+    const activoJwt = req.user.activo; // estado del usuario
+
+    console.log("idJwt (usuario autenticado):", idJwt);
+    console.log("rolJwt (rol del JWT):", rolJwt);
+    console.log("activoJwt (activo del JWT):", activoJwt);
+    //cliente
+    if (rolJwt === 2 && activoJwt === true) {
+      console.log("lo que se esta enviando es:", id);
+      const result = await cancelarOrden(id);
+      res.status(200).json(result); // Enviamos la respuesta
+    }
+    else{
+      return res.status(403).json({ message: "No tienes permiso para acceder a esta orden." });
+    }
+
+  } catch (error) {
+    res.status(500).json({ error: error.message }); // Enviamos el error al cliente
+  }
+};
+
+

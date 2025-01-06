@@ -111,25 +111,54 @@ exports.getAllProductos = async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Página solicitada, por defecto 1
   const limit = parseInt(req.query.limit) || 10; // Límite de registros por página, por defecto 10
 
+  // Obtener los parámetros de filtro de la solicitud
+  const { name, priceMin, priceMax, active, category } = req.query;
+
+  console.log("Los filtros recibidos son:", name, priceMin, priceMax, active, category);
+
+  // Preparar los filtros a pasar a la función `getProductos`
+  const filters = {
+    nombre: name || "", // Si no hay nombre, ponemos cadena vacía
+    precioMin: priceMin || null, // Si no hay precio mínimo, ponemos null
+    precioMax: priceMax || null, // Si no hay precio máximo, ponemos null
+    activo: active !== undefined ? (active === '1' ? 1 : 0) : null, // Convertimos '1' a 1 (activo) y '0' a 0 (inactivo)
+    categoria: category || null,
+  };
+
+  // Asegurarse de que los parámetros de paginación son correctos
   if (page <= 0 || limit <= 0) {
-    return res.status(400).json({ message: "Los parámetros 'page' y 'limit' deben ser mayores a 0." });
+    return res
+      .status(400)
+      .json({ message: "Los parámetros 'page' y 'limit' deben ser mayores a 0." });
   }
 
   try {
-    const productos = await getProductos();
+    // Llamar a la función `getProductos` y obtener los resultados de la base de datos
+    let productos = await getProductos(filters); 
 
+    // Si no se encuentran productos
     if (!productos || productos.length === 0) {
-      return res.status(404).json({ message: "No hay productos disponibles." });
+      return res.status(200).json({
+        data: [],
+        totalPages: 0,
+        currentPage: 1,
+        totalRecords: 0,
+      });
     }
+
+
+    
 
     console.log("Productos obtenidos:", productos);
 
-    // Calcular índices de paginación
+    // Calcular los índices para la paginación
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
 
+    // Obtener los productos de la página solicitada
     const paginatedProductos = productos.slice(startIndex, endIndex);
 
+    // Enviar la respuesta con los datos de los productos
     res.status(200).json({
       currentPage: page,
       totalPages: Math.ceil(productos.length / limit),
@@ -141,3 +170,4 @@ exports.getAllProductos = async (req, res) => {
     res.status(500).json({ error: "Error al obtener los productos." });
   }
 };
+

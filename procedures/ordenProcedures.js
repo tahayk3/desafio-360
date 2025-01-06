@@ -93,5 +93,31 @@ async function getOrdenes(){
     return results;
 }
 
-module.exports = { createOrden, changeOrden, getOrden, getOrdenes, changeOrdenEncabezado };
+
+async function cancelarOrden(id_orden) {
+    const [results] = await sequelize.query(
+        `
+        DECLARE @code INT;
+        DECLARE @message NVARCHAR(MAX);
+
+        EXEC CancelarOrden
+            @id_orden = :id_orden,
+            @code = @code OUTPUT,
+            @message = @message OUTPUT;
+
+        SELECT @code AS code, @message AS message;
+        `,
+        {
+            replacements: { id_orden }, // Pasar el ID de la orden al procedimiento
+            type: sequelize.QueryTypes.SELECT, // Tipo de consulta para SELECT
+        }
+    );
+    return results;
+}
+
+
+
+
+
+module.exports = { createOrden, changeOrden, getOrden, getOrdenes, changeOrdenEncabezado, cancelarOrden };
 

@@ -779,18 +779,32 @@ GO
 
 --Listar todos los datos de la tabla
 IF OBJECT_ID('ListarProductos', 'P') IS NOT NULL
-	DROP PROCEDURE ListarProductos
+    DROP PROCEDURE ListarProductos
 GO
 
 CREATE PROCEDURE ListarProductos
+    @nombre NVARCHAR(50) = NULL,
+    @marca NVARCHAR(50) = NULL,
+    @precioMin DECIMAL(10, 2) = NULL,
+    @precioMax DECIMAL(10, 2) = NULL,
+    @activo BIT = NULL,
+    @categoria INT = NULL
 AS
 BEGIN
     SELECT 
         id_producto, nombre, marca, codigo, stock, precio, fecha_creacion, foto, id_categoria_producto, id_estado, activo, id_usuario
     FROM 
-        Productos;
+        Productos
+    WHERE 
+        (@nombre IS NULL OR nombre LIKE '%' + @nombre + '%') AND
+        (@marca IS NULL OR marca LIKE '%' + @marca + '%') AND
+        (@precioMin IS NULL OR precio >= @precioMin) AND
+        (@precioMax IS NULL OR precio <= @precioMax) AND
+        (@activo IS NULL OR activo = ISNULL(@activo, 1)) AND
+        (@categoria IS NULL OR id_categoria_producto = @categoria);
 END;
 GO
+
 
 -- Inactivar producto
 IF OBJECT_ID('InactivarProducto', 'P') IS NOT NULL

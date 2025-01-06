@@ -9,7 +9,7 @@ router.post('/', verifyToken, addProducto);
 router.patch('/', verifyToken, updateProducto);
 router.delete('/:id', verifyToken, deleteProducto);
 router.get('/:id', verifyToken, getProductoById);
-router.get('/', verifyToken, getAllProductos)
+router.get('/', verifyToken, getAllProductos);
 
 module.exports = router;
 
