@@ -11,7 +11,7 @@ const bcrypt = require("bcrypt");
 async function loginUser(correo, password) {
     // Buscar al usuario en la base de datos
     const [user] = await sequelize.query(
-      `SELECT * FROM Usuarios WHERE correo = :correo`,
+      `SELECT * FROM Usuarios WHERE correo = :correo AND activo = 1`,
       {
         replacements: { correo },
         type: sequelize.QueryTypes.SELECT,

@@ -2,7 +2,7 @@ USE desafio3601
 
 /*
 Created: 3/12/2024
-Modified: 17/12/2024
+Modified: 06/01/2024
 Model: Microsoft SQL Server 2019
 Database: MS SQL Server 2019
 */
@@ -1492,47 +1492,52 @@ BEGIN
 END;
 GO
 
---Eliminar categoria producto
+--Eliminar categoría producto y desactivar productos
 IF OBJECT_ID('EliminarCategoriaProducto', 'P') IS NOT NULL
     DROP PROCEDURE EliminarCategoriaProducto;
 GO
 
 CREATE PROCEDURE EliminarCategoriaProducto
-    @id_categoria_producto INT,        -- ID del estado a eliminar (cambiar estado)
-    @code INT OUTPUT,      -- 1 para �xito, -1 para fallo
+    @id_categoria_producto INT,        -- ID de la categoría de producto a eliminar (cambiar estado)
+    @code INT OUTPUT,      -- 1 para éxito, -1 para fallo
     @message NVARCHAR(MAX) OUTPUT -- Mensaje descriptivo
 AS
 BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
-        -- Verificar que el estado exista
+        -- Verificar que la categoría exista y esté activa
         IF EXISTS (SELECT 1 FROM CategoriasProductos WHERE id_categoria_producto = @id_categoria_producto AND activo = 1)
         BEGIN
-            -- Cambiar el estado a 0 (inactivo)
+            -- Cambiar la categoría a inactiva
             UPDATE CategoriasProductos
             SET activo = 0
             WHERE id_categoria_producto = @id_categoria_producto;
 
-            -- Validar que el cambio fue exitoso
+            -- Desactivar los productos que pertenecen a esta categoría
+            UPDATE Productos
+            SET activo = 0
+            WHERE id_categoria_producto = @id_categoria_producto AND activo = 1;
+
+            -- Validar que la operación de desactivación de categoría y productos fue exitosa
             IF @@ROWCOUNT > 0
             BEGIN
-                SET @code = 1;  -- Operaci�n exitosa
-                SET @message = 'Categoria de producto eliminado (cambiado a inactivo) correctamente'; -- Mensaje de �xito
+                SET @code = 1;  -- Operación exitosa
+                SET @message = 'Categoría de producto eliminada e inactivada, productos de la misma categoría desactivados correctamente';
             END
             ELSE
             BEGIN
                 SET @code = -1;  -- Fallo
-                SET @message = 'No se pudo cambiar el estado, puede que ya est� inactivo';  -- Mensaje de error
+                SET @message = 'No se pudo cambiar el estado de la categoría, puede que ya esté inactiva';
             END
         END
         ELSE
         BEGIN
             SET @code = -1;
-            SET @message = 'Estado no encontrado o ya est� inactivo';
+            SET @message = 'Categoría no encontrada o ya está inactiva';
         END
 
-        -- Retornar c�digo y mensaje
+        -- Retornar código y mensaje
         SELECT @code AS code, @message AS message;
 
     END TRY
@@ -1540,10 +1545,11 @@ BEGIN
         -- Manejo de errores
         SET @code = -1;
         SET @message = ERROR_MESSAGE();  -- Captura el mensaje de error
-        SELECT @code AS code, @message AS message;  -- Retornar c�digo y mensaje de error
+        SELECT @code AS code, @message AS message;  -- Retornar código y mensaje de error
     END CATCH;
 END;
 GO
+
 
 --Consultar por id
 IF OBJECT_ID('BuscarCategoriaProductoPorId', 'P') IS NOT NULL
@@ -1810,7 +1816,7 @@ BEGIN
             UPDATE [Orden]
             SET 
                 activo = 0,                -- Orden inactiva
-                id_estado = 2,          -- Estado 'Cancelada'
+                id_estado = 2          -- Estado 'Cancelada'
             WHERE id_orden = @id_orden;
 
 			-- Se actualiza el detalle de la orden para cancelarlo
@@ -1989,33 +1995,14 @@ GROUP BY
 END;
 GO
 
+INSERT INTO Rol(nombre, activo) VALUES('Operador', 1);
+GO
+INSERT INTO Rol(nombre, activo) VALUES('Usuario', 1);
+GO
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+INSERT INTO Estados(nombre_estado, activo) VALUES('Pendiente', 1);
+GO
+INSERT INTO Estados(nombre_estado, activo) VALUES('Cancelado', 1);
+GO
+INSERT INTO Estados(nombre_estado, activo) VALUES('Completada', 1);
+GO
