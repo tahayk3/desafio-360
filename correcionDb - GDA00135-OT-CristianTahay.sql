@@ -671,7 +671,7 @@ BEGIN
 			U.activo = COALESCE(D.activo, U.activo),
 			U.id_usuario = COALESCE(D.id_usuario, U.id_usuario)
         FROM Productos U
-        INNER JOIN @productoData D ON U.id_usuario = D.id_producto;
+        INNER JOIN @productoData D ON U.id_producto = D.id_producto;
 
 		-- Verificar si se realiz� la actualizaci�n 
         IF @@ROWCOUNT > 0
